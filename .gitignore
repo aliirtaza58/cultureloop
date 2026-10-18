@@ -1,0 +1,35 @@
+# Credentials and local settings
+.env
+.env.*
+!.env.example
+.vercel/
+
+# Private responses, caches, and participant research
+.private/
+.cache/
+data/private/
+research/private/
+*.log
+
+# Build and dependency outputs
+node_modules/
+.next/
+.eve/
+.output/
+.workflow/
+dist/
+build/
+coverage/
+__pycache__/
+*.pyc
+*.tsbuildinfo
+
+# Retain the user's original ZIP locally; version the extracted reusable skill.
+ui-ux-pro-max-skill-main.zip
+
+# Local databases
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3

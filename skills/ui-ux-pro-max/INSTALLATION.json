@@ -1,0 +1,10 @@
+{
+  "skill": "ui-ux-pro-max",
+  "installedFrom": "ui-ux-pro-max-skill-main.zip",
+  "archiveSha256": "D3F2B5C8D56B1947F07BB2F5BF0B10C27430FC75CAE7246DB2728CEAE5EC10A4",
+  "sourcePrefix": "ui-ux-pro-max-skill-main/.claude/skills/ui-ux-pro-max/",
+  "reviewedDate": "2026-10-18",
+  "license": "MIT; upstream LICENSE retained",
+  "upstreamFiles": 73,
+  "adaptation": "Only Claude-specific example script paths replaced with a skill-directory placeholder for Codex portability."
+}
