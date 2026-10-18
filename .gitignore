@@ -4,6 +4,37 @@
 !.env.example
 .vercel/
 
+# Local coding-agent instructions, skills, settings, and session state
+AGENTS.md
+AGENTS.local.md
+CLAUDE.md
+CLAUDE.local.md
+GEMINI.md
+CODEX.md
+.agent/
+.agents/
+.codex/
+.claude/
+.cursor/
+.cursorrules
+.windsurf/
+.windsurfrules
+.continue/
+.aider*
+.mcp.json
+.mcp.local.json
+mcp.local.json
+.vscode/
+.idea/
+.github/copilot-instructions.md
+.github/instructions/
+.github/prompts/
+/skills/
+/design-system/
+/PHASE_TRACKER.md
+/SESSION_HANDOFF.md
+/docs/FRONTEND_DESIGN.md
+
 # Private responses, caches, and participant research
 .private/
 .cache/
@@ -24,7 +55,7 @@ __pycache__/
 *.pyc
 *.tsbuildinfo
 
-# Retain the user's original ZIP locally; version the extracted reusable skill.
+# Retain the user's original skill archive locally.
 ui-ux-pro-max-skill-main.zip
 
 # Local databases

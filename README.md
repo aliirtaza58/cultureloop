@@ -2,7 +2,7 @@
 
 An agent-powered book exchange app that uses Qloo to match cultural interests with available books and find exchanges between two or three people.
 
-Source: [aliirtaza58/cultureloop](https://github.com/aliirtaza58/cultureloop). Licensed under [MIT](LICENSE); the supplied UI/UX skill retains its [upstream license](skills/ui-ux-pro-max/LICENSE).
+Source: [aliirtaza58/cultureloop](https://github.com/aliirtaza58/cultureloop). Licensed under [MIT](LICENSE).
 
 ## Run the Phase 1 foundation
 
@@ -33,11 +33,7 @@ Each search/rank invocation makes at most one GET request, with a timeout and no
 
 The eve 0.80.1 scaffold exposes one synthetic sample-preview tool, with optional default tools disabled. It deliberately has no default model. Model execution requires an account-verified free-tier tool-capable `AI_GATEWAY_MODEL` and private model authentication; no model request or hosted runtime has been verified. Session token limits are not an account-wide spending guarantee.
 
-Room storage, membership authorization, participant approvals, browser UI, and deployment remain later checkpoints. Follow the phase tracker before attempting agent development or hosted setup.
-
-## Resume a session
-
-Start with [AGENTS.md](AGENTS.md), [PHASE_TRACKER.md](PHASE_TRACKER.md), and [SESSION_HANDOFF.md](SESSION_HANDOFF.md). These contain the rules, current phase, and next actions. The user requires **free tiers only**.
+Room storage, membership authorization, participant approvals, browser UI, and deployment remain later checkpoints. Development and hosting use **free tiers only**.
 
 ## Project references
 
@@ -46,8 +42,6 @@ Start with [AGENTS.md](AGENTS.md), [PHASE_TRACKER.md](PHASE_TRACKER.md), and [SE
 - [Resources and deployment](docs/RESOURCES_AND_DEPLOYMENT.md): data acquisition, free hosting, scaling, and judge access.
 - [Decision log](docs/DECISIONS.md): durable choices and open architecture decisions.
 - [Environment template](.env.example): proposed variable names, with no credentials.
-- [Frontend design workflow](docs/FRONTEND_DESIGN.md): supplied UI/UX skill, scope, and future design-system checkpoint.
+- [Foundation verification](docs/FOUNDATION_VERIFICATION.md): completed checks and remaining application work.
 
 Read the Qloo reference before implementing or changing API calls. Recheck its linked official documentation when choosing parameters or investigating a changed response.
-
-Current task status and verification belong in the phase tracker. Read the relevant references on demand rather than loading the entire project history.

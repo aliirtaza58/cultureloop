@@ -9,7 +9,7 @@ Date: 2026-10-18 (Asia/Karachi). Scope: initial repository connection and comman
 - src/integrations/qloo.ts: GET-only event-host client; header authentication, bounded requests, timeout, safe errors, fixed-catalog request builder.
 - scripts/probe-qloo.ts: one-request feasibility capture into ignored private storage. Help performs no API call.
 - agent/: eve config with no default model and default tools disabled; one read-only synthetic-preview tool.
-- Pinned package/lockfile and standard MIT license. The third-party skill retains its own license.
+- Pinned package/lockfile and standard MIT license.
 
 ## Checks
 
@@ -18,7 +18,7 @@ Date: 2026-10-18 (Asia/Karachi). Scope: initial repository connection and comman
 - `node scripts/probe-qloo.ts --help`: passed without external requests.
 - `npm run typecheck`: passed. The initial check required explicit Node ambient types under TypeScript 7; corrected the config and callback typing, then reran successfully.
 - Dependency installation completed; npm reported zero vulnerabilities in 39 audited packages.
-- Continuity checks: 1,472 words across the three startup files; 10 project Markdown documents with 24 valid local links; environment template contains no filled secret placeholders.
+- Environment template contains no filled secret placeholders.
 
 No tests use a live Qloo key, model credits, or external book/user datasets. Mock transport checks validate request construction and error handling, not the current remote service contract.
 

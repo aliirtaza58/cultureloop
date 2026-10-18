@@ -1,6 +1,6 @@
 # CultureLoop build plan
 
-Prepared October 18, 2026, for a solo entrant. This is an implementation plan; no completed features, API measurements, or user results are implied. The user explicitly requires **free tiers only**. Current progress lives in [../PHASE_TRACKER.md](../PHASE_TRACKER.md); session rules live in [../AGENTS.md](../AGENTS.md).
+Prepared October 18, 2026, for a solo entrant. This is an implementation plan; no completed features, API measurements, or user results are implied. The project requires **free tiers only**. Completed checks are recorded in [foundation verification](FOUNDATION_VERIFICATION.md).
 
 ## Product commitment
 
@@ -145,7 +145,7 @@ Implementation work covers scaffolding, adapters, matching, UI, persistence, age
 
 ## Current status and next deliverable
 
-See [../PHASE_TRACKER.md](../PHASE_TRACKER.md) for verified environment, current dependencies, and evidence. Avoid duplicating changing status in this detailed plan.
+See [foundation verification](FOUNDATION_VERIFICATION.md) for completed checks and remaining implementation work.
 
 Next deliverable: a local three-member room using labeled synthetic evidence to verify cycle formation, plus the live Qloo probe ready for key configuration. Then replace synthetic evidence with inspected live responses before demonstrating the core taste feature as complete.
 

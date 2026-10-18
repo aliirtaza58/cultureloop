@@ -71,7 +71,7 @@ Application persistence belongs in Postgres. Hobby Workflow retention after run 
 5. Run migrations against the intended development database, seed only labeled examples, and verify one browser-to-agent request. Keep preview and production data logically isolated; create a separate free branch/database if quota permits.
 6. Deploy an early preview. Test health, model auth, Qloo auth, database persistence, guest membership, and streaming from the actual host. Do not postpone this integration test until final polish.
 7. Release the tested build to a stable public production URL. Ensure the production entry does not require hosting-team login or a private deployment bypass. Keep application-level member authorization intact.
-8. From a fresh browser, complete create/join, books/interests, proposal, evidence, decline/withdrawal, repair, accept, reload, and export. Record URL, revision, actual commands/results, and known limitations in the tracker/handoff.
+8. From a fresh browser, complete create/join, books/interests, proposal, evidence, decline/withdrawal, repair, accept, reload, and export. Record URL, revision, actual commands/results, and known limitations in release verification evidence.
 9. Submit the production URL and public source on Devpost. Keep normal public judging access working throughout judging; check provider usage manually and leave headroom. No recurring automation has been requested or created.
 
 Production model authentication can use Vercel project OIDC on the planned Gateway path; local development can use an ignored Gateway key or linked development OIDC. Credentials do not imply a paid allowance. [eve authentication/deployment](https://github.com/vercel/eve/blob/main/docs/guides/deployment/vercel.mdx).
