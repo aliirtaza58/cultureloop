@@ -13,6 +13,11 @@ export const sampleRoom: RoomInput = {
     { memberId: "cyra", bookId: "fiction-margins-tomorrow", source: "synthetic", rank: 1, catalogSize: 3 },
     { memberId: "aria", bookId: "fiction-river-questions", source: "synthetic", rank: 1, catalogSize: 3 },
   ],
+  shortlists: [
+    { memberId: "ben", bookId: "fiction-lantern-atlas", acceptable: true },
+    { memberId: "cyra", bookId: "fiction-margins-tomorrow", acceptable: true },
+    { memberId: "aria", bookId: "fiction-river-questions", acceptable: true },
+  ],
 };
 
 export const sampleTitles: Readonly<Record<string, string>> = {

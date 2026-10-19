@@ -6,7 +6,10 @@ import { sampleRoom } from "../src/fixtures/sample-room.ts";
 
 function room(memberIds = ["a", "b"]): RoomInput {
   return { memberIds, listings: memberIds.map(id => ({ id: `copy-${id}`, bookId: `book-${id}`,
-    ownerId: id, available: true })), preferences: [] };
+    ownerId: id, available: true })), preferences: [],
+    // These fixture participants explicitly chose every other offered title.
+    shortlists: memberIds.flatMap(memberId => memberIds.filter(owner => owner !== memberId)
+      .map(owner => ({ memberId, bookId: `book-${owner}`, acceptable: true }))) };
 }
 function likes(memberId: string, ownerId: string, rank = 1, catalogSize = 3): Preference {
   return { memberId, bookId: `book-${ownerId}`, source: "synthetic", rank, catalogSize };
@@ -24,13 +27,15 @@ test("finds a three-person exchange where no direct exchange exists", () => {
   assert.equal(cycles.length, 1);
   assert.equal(cycles[0]!.memberIds.length, 3);
   assert.equal(proposeExchanges(sampleRoom).membersServed, 3);
-  assert.ok(cycles[0]!.transfers.every(t => t.evidence.source === "synthetic"));
+  assert.ok(cycles[0]!.transfers.every(t => t.evidence?.source === "synthetic"));
 });
 
-test("missing evidence produces no transfer rather than an invented preference", () => {
+test("shortlisted books with missing evidence remain eligible and explicitly unknown", () => {
   const result = proposeExchanges({ ...room(), preferences: [likes("a", "b")] });
-  assert.deepEqual(result.cycles, []);
+  assert.equal(result.membersServed, 2);
   assert.equal(result.weakestRankUtility, 0);
+  assert.equal(result.cycles[0]!.transfers.filter(t => t.evidenceStatus === "unknown").length, 1);
+  assert.equal(result.cycles[0]!.transfers.find(t => t.evidenceStatus === "unknown")!.evidence, undefined);
 });
 
 test("withdrawal makes the sample cycle infeasible without mutating old input", () => {
@@ -41,30 +46,30 @@ test("withdrawal makes the sample cycle infeasible without mutating old input", 
 });
 
 test("never exchanges a member's own physical copy", () => {
-  assert.deepEqual(proposeExchanges({ ...room(), preferences: [likes("a", "a"), likes("b", "b")] }).cycles, []);
+  assert.deepEqual(proposeExchanges({ ...room(), preferences: [likes("a", "a"), likes("b", "b")],
+    shortlists: [{ memberId: "a", bookId: "book-a", acceptable: true },
+      { memberId: "b", bookId: "book-b", acceptable: true }] }).cycles, []);
 });
 
-test("explicit veto overrides a high rank", () => {
-  const result = proposeExchanges({ ...room(), preferences: [likes("a", "b"),
-    { ...likes("b", "a"), veto: true }] });
+test("explicit unwillingness excludes even a high-ranked book", () => {
+  const base = room();
+  const result = proposeExchanges({ ...base, preferences: [likes("a", "b"), likes("b", "a")],
+    shortlists: base.shortlists.map(d => d.memberId === "b" ? { ...d, acceptable: false } : d) });
   assert.equal(result.membersServed, 0);
 });
 
-test("an explicit wanted title constrains automatic alternatives", () => {
+test("ranked alternatives outside the shortlist cannot be proposed", () => {
   const input = { ...room(["a", "b", "c"]), preferences: [
-    { memberId: "a", bookId: "book-c", source: "explicit" } as Preference,
     likes("a", "b"), likes("b", "a"),
-  ] };
+  ], shortlists: [{ memberId: "a", bookId: "book-c", acceptable: true },
+    { memberId: "b", bookId: "book-a", acceptable: true }] };
   assert.equal(proposeExchanges(input).membersServed, 0);
 });
 
-test("manual wishes require no fabricated Qloo rank", () => {
-  const result = proposeExchanges({ ...room(), preferences: [
-    { memberId: "a", bookId: "book-b", source: "explicit" },
-    { memberId: "b", bookId: "book-a", source: "explicit" },
-  ] });
+test("willingness alone can form a cycle without fabricated Qloo evidence", () => {
+  const result = proposeExchanges(room());
   assert.equal(result.membersServed, 2);
-  assert.ok(result.cycles[0]!.transfers.every(t => t.evidence.rank === undefined));
+  assert.ok(result.cycles[0]!.transfers.every(t => t.evidence === undefined && t.rankUtility === 0));
 });
 
 test("selects globally compatible cycles instead of a smaller overlapping combination", () => {
@@ -91,6 +96,9 @@ test("breaks coverage ties by weakest fit, then total rank utility", () => {
     { memberId: "a", bookId: "b2", source: "synthetic", rank: 2, catalogSize: 3 },
     { memberId: "b", bookId: "a1", source: "synthetic", rank: 3, catalogSize: 3 },
     { memberId: "b", bookId: "a2", source: "synthetic", rank: 2, catalogSize: 3 },
+  ], shortlists: [
+    { memberId: "a", bookId: "b1", acceptable: true }, { memberId: "a", bookId: "b2", acceptable: true },
+    { memberId: "b", bookId: "a1", acceptable: true }, { memberId: "b", bookId: "a2", acceptable: true },
   ] };
   const result = proposeExchanges(input);
   assert.deepEqual(result.cycles[0]!.transfers.map(t => t.listingId).sort(), ["a2", "b1"]);
@@ -103,6 +111,9 @@ test("same-title copies stay distinct and do not let one member join two cycles"
     listings: base.listings.map(l => l.ownerId === "c" ? l : { ...l, bookId: "shared-title" }),
     preferences: [likes("a", "c"), likes("b", "c"),
       { memberId: "c", bookId: "shared-title", source: "synthetic", rank: 1, catalogSize: 2 }],
+    shortlists: [{ memberId: "a", bookId: "book-c", acceptable: true },
+      { memberId: "b", bookId: "book-c", acceptable: true },
+      { memberId: "c", bookId: "shared-title", acceptable: true }],
   });
   assert.equal(result.membersServed, 2);
   assert.equal(new Set(result.cycles.flatMap(c => c.transfers.map(t => t.listingId))).size, 2);
@@ -115,6 +126,7 @@ test("ties are reproducible when input ordering changes", () => {
   assert.deepEqual(proposeExchanges(input), proposeExchanges({
     memberIds: [...input.memberIds].reverse(), listings: [...input.listings].reverse(),
     preferences: [...input.preferences].reverse(),
+    shortlists: [...input.shortlists].reverse(),
   }));
 });
 
@@ -139,7 +151,7 @@ test("rejects invalid ranks, missing ranks, and out-of-scope room sizes", () => 
     assert.throws(() => proposeExchanges({ ...room(), preferences: [likes("a", "b", rank)] }), /Rank/);
   }
   assert.throws(() => proposeExchanges({ ...room(), preferences: [
-    { memberId: "a", bookId: "book-b", source: "qloo" },
+    { memberId: "a", bookId: "book-b", source: "qloo" } as Preference,
   ] }), /supply a rank/);
   assert.throws(() => proposeExchanges(room(["a"])), /2 to 6/);
   assert.throws(() => proposeExchanges(room(["a", "b", "c", "d", "e", "f", "g"])), /2 to 6/);
@@ -153,5 +165,28 @@ test("rejects duplicate members and more than three offered copies per member", 
 });
 
 test("room with no offered inventory gives an empty proposal", () => {
-  assert.deepEqual(proposeExchanges({ ...room(), listings: [] }).cycles, []);
+  assert.deepEqual(proposeExchanges({ ...room(), listings: [], shortlists: [] }).cycles, []);
+});
+
+test("rank evidence alone never implies willingness", () => {
+  assert.equal(proposeExchanges({ ...room(), shortlists: [],
+    preferences: [likes("a", "b"), likes("b", "a")] }).membersServed, 0);
+});
+
+test("shortlisting preserves original evidence ranks and never records approval", () => {
+  const input = { ...room(), preferences: [likes("a", "b", 2), likes("b", "a", 3)] };
+  const original = structuredClone(input);
+  const result = proposeExchanges(input);
+  assert.deepEqual(input, original);
+  assert.equal(result.cycles[0]!.transfers.find(t => t.toMemberId === "a")!.evidence!.rank, 2);
+  assert.equal(result.cycles[0]!.transfers.find(t => t.toMemberId === "b")!.evidence!.rank, 3);
+  assert.equal(result.approvalRequired, true);
+});
+
+test("rejects missing, foreign, duplicate, or non-boolean shortlist decisions", () => {
+  const base = room();
+  assert.throws(() => proposeExchanges({ ...base, shortlists: undefined } as unknown as RoomInput), /required/);
+  assert.throws(() => proposeExchanges({ ...base, shortlists: [{ memberId: "outside", bookId: "book-a", acceptable: true }] }), /outside/);
+  assert.throws(() => proposeExchanges({ ...base, shortlists: [base.shortlists[0]!, base.shortlists[0]!] }), /unique/);
+  assert.throws(() => proposeExchanges({ ...base, shortlists: [{ ...base.shortlists[0]!, acceptable: "yes" }] } as unknown as RoomInput), /boolean/);
 });

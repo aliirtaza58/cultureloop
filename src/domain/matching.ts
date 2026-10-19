@@ -1,26 +1,35 @@
 /** Ranking utility is an application heuristic, never an enjoyment probability. */
-export type EvidenceSource = "synthetic" | "qloo" | "explicit";
+export type EvidenceSource = "synthetic" | "qloo";
 
 export interface Listing {
   readonly id: string;
   readonly bookId: string;
   readonly ownerId: string;
   readonly available: boolean;
+  readonly title?: string;
 }
 
 export interface Preference {
   readonly memberId: string;
   readonly bookId: string;
   readonly source: EvidenceSource;
-  readonly rank?: number;
-  readonly catalogSize?: number;
-  readonly veto?: boolean;
+  readonly rank: number;
+  readonly catalogSize: number;
+  readonly snapshotId?: string;
+}
+
+/** A participant's willingness, kept separately from taste evidence and approval. */
+export interface ShortlistDecision {
+  readonly memberId: string;
+  readonly bookId: string;
+  readonly acceptable: boolean;
 }
 
 export interface RoomInput {
   readonly memberIds: readonly string[];
   readonly listings: readonly Listing[];
   readonly preferences: readonly Preference[];
+  readonly shortlists: readonly ShortlistDecision[];
 }
 
 export interface Transfer {
@@ -28,7 +37,9 @@ export interface Transfer {
   readonly bookId: string;
   readonly fromMemberId: string;
   readonly toMemberId: string;
-  readonly evidence: Preference;
+  readonly evidence?: Preference;
+  readonly evidenceStatus: "ranked" | "unknown";
+  /** Zero for unknown evidence is a tie-break contribution, not affinity or dislike. */
   readonly rankUtility: number;
 }
 
@@ -86,11 +97,8 @@ function validateRoom(room: RoomInput): void {
     const key = JSON.stringify([preference.memberId, preference.bookId]);
     if (seen.has(key)) throw new Error("Each member/book preference must be unique.");
     seen.add(key);
-    if (!["synthetic", "qloo", "explicit"].includes(preference.source)) {
+    if (!["synthetic", "qloo"].includes(preference.source)) {
       throw new Error("Unknown evidence source.");
-    }
-    if (preference.veto !== undefined && typeof preference.veto !== "boolean") {
-      throw new Error("Veto must be boolean.");
     }
     if (preference.rank !== undefined || preference.catalogSize !== undefined) {
       if (!Number.isInteger(preference.rank) || !Number.isInteger(preference.catalogSize)
@@ -99,9 +107,20 @@ function validateRoom(room: RoomInput): void {
         throw new Error("Rank must be within a valid catalog of at most 50 titles.");
       }
     }
-    if (!preference.veto && preference.source !== "explicit" && preference.rank === undefined) {
+    if (preference.rank === undefined || preference.catalogSize === undefined) {
       throw new Error("Ranked evidence must supply a rank and catalog size.");
     }
+  }
+  if (!Array.isArray(room.shortlists)) throw new Error("Explicit shortlist decisions are required.");
+  const decisions = new Set<string>();
+  for (const decision of room.shortlists) {
+    if (!members.has(decision.memberId) || !bookIds.has(decision.bookId)) {
+      throw new Error("Shortlist references a member or book outside the room.");
+    }
+    const key = JSON.stringify([decision.memberId, decision.bookId]);
+    if (decisions.has(key)) throw new Error("Each member/book shortlist decision must be unique.");
+    if (typeof decision.acceptable !== "boolean") throw new Error("Shortlist willingness must be boolean.");
+    decisions.add(key);
   }
 }
 
@@ -110,11 +129,11 @@ export function enumerateCycles(room: RoomInput): ExchangeCycle[] {
   validateRoom(room);
   const members = [...room.memberIds].sort();
   const preferences = new Map(room.memberIds.map(id => [id, new Map<string, Preference>()]));
-  const explicitMembers = new Set<string>();
   for (const preference of room.preferences) {
     preferences.get(preference.memberId)!.set(preference.bookId, preference);
-    if (preference.source === "explicit" && !preference.veto) explicitMembers.add(preference.memberId);
   }
+  const acceptable = new Set(room.shortlists.filter(d => d.acceptable)
+    .map(d => JSON.stringify([d.memberId, d.bookId])));
   const listings = [...room.listings].sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
   const cycles: ExchangeCycle[] = [];
 
@@ -123,20 +142,19 @@ export function enumerateCycles(room: RoomInput): ExchangeCycle[] {
       const recipient = order[(index + 1) % order.length]!;
       return listings.flatMap(listing => {
         if (!listing.available || listing.ownerId !== giver) return [];
+        if (!acceptable.has(JSON.stringify([recipient, listing.bookId]))) return [];
         const evidence = preferences.get(recipient)!.get(listing.bookId);
-        if (!evidence || evidence.veto) return [];
-        if (explicitMembers.has(recipient) && evidence.source !== "explicit") return [];
-        const rankUtility = evidence.source === "explicit"
-          ? 1 : (evidence.catalogSize! - evidence.rank! + 1) / evidence.catalogSize!;
+        const rankUtility = evidence ? (evidence.catalogSize - evidence.rank + 1) / evidence.catalogSize : 0;
         return [{ listingId: listing.id, bookId: listing.bookId, fromMemberId: giver,
-          toMemberId: recipient, evidence: { ...evidence }, rankUtility } satisfies Transfer];
+          toMemberId: recipient, ...(evidence ? { evidence: { ...evidence } } : {}),
+          evidenceStatus: evidence ? "ranked" as const : "unknown" as const, rankUtility } satisfies Transfer];
       });
     });
     if (choices.some(options => options.length === 0)) return;
     function combine(index: number, selected: Transfer[]): void {
       if (index === choices.length) {
         const transfers = [...selected];
-        const id = JSON.stringify(transfers.map(t => [t.fromMemberId, t.listingId, t.toMemberId]));
+        const id = JSON.stringify(transfers.map(t => [t.fromMemberId, t.listingId, t.bookId, t.toMemberId]));
         cycles.push({ id, memberIds: [...order], transfers });
         return;
       }
@@ -179,8 +197,14 @@ function isBetter(candidate: ExchangeProposal, current: ExchangeProposal): boole
 }
 
 /** Maximize members served, then the weakest rank utility, then total utility. */
-export function proposeExchanges(room: RoomInput): ExchangeProposal {
-  const cycles = enumerateCycles(room);
+export function proposeExchanges(room: RoomInput, constraints: {
+  readonly excludedCycleIds?: readonly string[];
+  readonly reservedMemberIds?: readonly string[];
+} = {}): ExchangeProposal {
+  const excluded = new Set(constraints.excludedCycleIds ?? []);
+  const reserved = new Set(constraints.reservedMemberIds ?? []);
+  if ([...reserved].some(id => !room.memberIds.includes(id))) throw new Error("Reserved member is outside the room.");
+  const cycles = enumerateCycles(room).filter(c => !excluded.has(c.id) && !c.memberIds.some(id => reserved.has(id)));
   const cyclesByMember = new Map(room.memberIds.map(id => [id, cycles.filter(c => c.memberIds.includes(id))]));
   let best = summarize([]);
   function visit(remaining: string[], selected: ExchangeCycle[]): void {
@@ -196,6 +220,6 @@ export function proposeExchanges(room: RoomInput): ExchangeProposal {
       visit(remaining.filter(id => !cycle.memberIds.includes(id)), [...selected, cycle]);
     }
   }
-  visit([...room.memberIds].sort(), []);
+  visit(room.memberIds.filter(id => !reserved.has(id)).sort(), []);
   return best;
 }
