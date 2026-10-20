@@ -1,0 +1,47 @@
+import { readFile } from "node:fs/promises";
+import { resolve } from "node:path";
+import { Pool } from "pg";
+import type { SqlConnection, SqlPool } from "./store.ts";
+
+let initialized: Promise<SqlPool> | undefined;
+
+/** Embedded mode is a persistent local prototype, never a hosted-production fallback. */
+export function database(): Promise<SqlPool> {
+  initialized ??= initialize();
+  return initialized;
+}
+async function initialize(): Promise<SqlPool> {
+  if (process.env.CULTURELOOP_LOCAL_PROTOTYPE === "true") {
+    if (process.env.VERCEL) throw new Error("Embedded prototype storage cannot run on the hosted service.");
+    const { PGlite } = await import("@electric-sql/pglite");
+    const db = await PGlite.create(resolve(process.cwd(), ".private", "prototype-db"));
+    await db.exec(await readFile(resolve(process.cwd(), "db", "001_rooms.sql"), "utf8"));
+    // One embedded connection: keep whole transactions serialized, not individual statements.
+    let tail = Promise.resolve();
+    return { async connect(): Promise<SqlConnection> {
+      const previous = tail;
+      let unlock!: () => void;
+      tail = new Promise<void>(done => { unlock = done; });
+      await previous;
+      return {
+        async query<T extends Record<string, unknown>>(sql: string, values?: unknown[]) {
+          const result = await db.query<T>(sql, values);
+          return { rows: result.rows, rowCount: result.affectedRows };
+        }, release: unlock,
+      };
+    } };
+  }
+  if (!process.env.DATABASE_URL) throw new Error("Hosted PostgreSQL is not configured.");
+  // The hosted target/plan must be verified during setup before this opt-in is enabled.
+  if (process.env.CULTURELOOP_HOSTED_DB_VERIFIED !== "true") throw new Error("Hosted database target/free plan has not been verified.");
+  const pool = new Pool({ connectionString: process.env.DATABASE_URL, max: 3,
+    connectionTimeoutMillis: 8000, idleTimeoutMillis: 10000, allowExitOnIdle: true,
+    application_name: "cultureloop" });
+  return { async connect() {
+    const client = await pool.connect();
+    return { async query<T extends Record<string, unknown>>(sql: string, values?: unknown[]) {
+      const result = await client.query<T>(sql, values);
+      return { rows: result.rows, rowCount: result.rowCount };
+    }, release: () => client.release() };
+  } };
+}
