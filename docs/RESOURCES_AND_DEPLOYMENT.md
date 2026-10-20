@@ -1,18 +1,18 @@
 # CultureLoop resources, data, and deployment
 
-Prepared 2026-10-18. Budget: **free tiers only**, explicitly selected by the user. This is a plan; no external resources have been created and no account quota has been verified.
+Updated 2026-10-21. Budget: **free tiers only**, explicitly selected by the user. No hosted resources have been created or free account quotas verified. Follow [the setup guide](SETUP.md) for account/model/database steps and [backend verification](PROTOTYPE_BACKEND_VERIFICATION.md) for observed results.
 
 ## Resources to prepare
 
 | Resource | What it supplies | Setup status / requirement |
 | --- | --- | --- |
-| Qloo event access | Entity identities and cultural evidence | Key application in progress; configure privately once issued |
-| GitHub account/repository | Public source, issues, version history | Account access unknown; repository not created |
+| Qloo event access | Entity identities and cultural evidence | Key issued; live search/catalog ranking verified privately |
+| GitHub account/repository | Public source, issues, version history | [Source repository](https://github.com/aliirtaza58/cultureloop); initial source pushed October 18 |
 | Vercel Hobby account/project | Public HTTPS web app and agent runtime | Proposed; verify Hobby eligibility and actual service allowances |
 | Neon Free Postgres | Persistent rooms, listings, approvals, private caches | Proposed; provision only a free resource |
-| AI Gateway free-tier access | Model inference for one bounded tool-calling agent | Verify included credit, eligible tool-capable model, rate limits, and authentication |
+| AI Gateway free-tier access | Model inference for one bounded tool-calling agent | Credentials/model currently unset locally; verify credit, eligible tools, limits and authentication |
 | Devpost entry | Official submission and judge instructions | Entrant-owned; final submission remains an entrant action |
-| Local Node/npm/Git | Development and verification | Already verified locally; package versions still need pinning |
+| Local Node/npm/Git | Development and verification | Verified locally; dependency versions pinned |
 | A small consenting test group | Evidence about usefulness and usability | Aim for 5-8 exploratory testers; no recruitment messages authorized |
 
 Built-in tooling can handle source and deployment work after target/account access is established. Do not request account passwords or API keys in chat.
@@ -64,7 +64,7 @@ Application persistence belongs in Postgres. Hobby Workflow retention after run 
 
 ## Setup and release sequence
 
-1. Verify intended GitHub/Vercel identity and project target; create the source repository during implementation. Add a recognized open-source license before submission.
+1. Verify intended Vercel identity/project target. The GitHub repository already exists with an MIT license; preserve its history.
 2. Verify free-only plan eligibility and resource quotas. Select an actually free-tier-eligible model supporting the required tools; do not accept a scaffold default blindly.
 3. Scaffold and pin packages. Link the intended Vercel project before pulling environment values or running shared database setup. Prefer a genuinely free Neon integration; inspect plan and resource before provisioning.
 4. Configure server secrets in the host and local ignored environment. The committed .env.example is a proposed variable contract, not proof of a working integration. Check names/presence without printing values. Preserve local values before any environment-file replacement.

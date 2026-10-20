@@ -1,47 +1,50 @@
 # CultureLoop
 
-An agent-powered book exchange app that uses Qloo to match cultural interests with available books and find exchanges between two or three people.
+A prototype for friends and students exchanging physical books locally. Qloo ranks a room's catalog from voluntary cultural interests. Members explicitly shortlist acceptable books, then review proposed two- or three-person exchanges and approve their own transfers.
 
-Source: [aliirtaza58/cultureloop](https://github.com/aliirtaza58/cultureloop). Licensed under [MIT](LICENSE).
+Source: [aliirtaza58/cultureloop](https://github.com/aliirtaza58/cultureloop). Licensed under [MIT](LICENSE). Development and hosting use **free tiers only**.
 
-## Run the Phase 1 foundation
+## Verify the backend
 
-Requires Node.js 24 or newer and npm. Install the pinned dependencies with `npm ci`.
+Requires Node.js 24 or newer and npm. Install pinned dependencies with `npm ci`.
 
 ```powershell
 npm test
 npm run typecheck
 npm run demo
+npm run setup:check
 ```
 
-The command-line demo is an independently authored **synthetic** three-person exchange. It makes no Qloo or model calls, changes no real inventory, and records no participant approvals. Tests cover the matching contract and mocked Qloo transport behavior. No web UI or hosted application exists yet.
+The command-line demo and public fixtures are independently authored **synthetic** examples. They make no live Qloo or model calls, change no real inventory and record no participant approvals. Tests include embedded PostgreSQL transactions, membership isolation, holds, repair, caching and request safeguards. Hosted concurrency and browser flows remain unverified.
 
-The solver separates canonical book identities from physical copies, finds compatible two-/three-person cycles, and prioritizes coverage, weakest recipient rank utility, then total utility. Utility is an application ranking heuristic, not an enjoyment probability. Missing evidence is unknown; explicit wishes and vetoes constrain suggestions.
+The solver separates titles from physical copies and prioritizes members served, weakest recipient rank utility, then total utility. This utility is an application heuristic, not an enjoyment probability. Shortlists remain separate from ranks; missing evidence stays unknown. Unchanged disjoint cycles retain approvals during repair; changed transfers require fresh approval.
 
-## Qloo feasibility probe
+## Current prototype status
 
-Configure the issued key privately in ignored `.env.local`, using [.env.example](.env.example) for variable names. Never commit the key or captured Qloo responses.
+Live Qloo authentication, identity resolution and fixed-catalog ranking were verified privately. Room/domain services, a PostgreSQL schema, signed identity selections and Next.js API handlers are implemented. API handlers have not yet passed an HTTP/browser integration check. There is **no web UI or hosted application yet**.
+
+The eve 0.80.1 scaffold has no default model. The intended free hosting account, model authentication/eligibility, hosted database and a real hosted agent tool turn must be verified before release. Retain eve only if the four-hour hosted feasibility checkpoint succeeds; otherwise use the bounded AI SDK fallback described in the plan.
+
+The entrant will test and approve the prototype before the final submission version is prepared. UI work is deferred to the next session.
+
+## Private configuration and Qloo checks
+
+Follow the [setup guide](docs/SETUP.md). Variable names are in [.env.example](.env.example); credentials belong in ignored `.env.local` and host secrets. Scripts also read an existing ignored `.env`, with `.env.local` taking precedence. Never commit captured Qloo responses.
 
 ```powershell
 npm run qloo:probe -- --help
 npm run qloo:probe -- search book "The Hobbit"
+npm run setup:check -- --gateway
 ```
 
-Each search/rank invocation makes at most one GET request, with a timeout and no automatic retries. Actual responses are saved only under ignored `.private/qloo-probes/` for inspection. The adapter is not yet verified against the entrant's live key; inspect returned IDs, coverage, ranks, and explanation warnings before connecting it to proposals.
-
-## Agent scaffold
-
-The eve 0.80.1 scaffold exposes one synthetic sample-preview tool, with optional default tools disabled. It deliberately has no default model. Model execution requires an account-verified free-tier tool-capable `AI_GATEWAY_MODEL` and private model authentication; no model request or hosted runtime has been verified. Session token limits are not an account-wide spending guarantee.
-
-Room storage, membership authorization, participant approvals, browser UI, and deployment remain later checkpoints. Development and hosting use **free tiers only**.
+The search command makes one live GET with no automatic retries, saving responses privately. The optional Gateway diagnostic reads model/credit metadata only and makes no inference request. `npm run qloo:verify` performs a bounded research study of up to 35 new requests; it reuses private captures and requires review of ambiguous identities. Do not rerun merely to verify a build.
 
 ## Project references
 
-- [Build plan](docs/BUILD_PLAN.md): scope, milestones, architecture, validation, and submission preparation.
-- [Qloo API reference](docs/QLOO_API_REFERENCE.md): authentication, supported request flow, troubleshooting, and source links.
-- [Resources and deployment](docs/RESOURCES_AND_DEPLOYMENT.md): data acquisition, free hosting, scaling, and judge access.
-- [Decision log](docs/DECISIONS.md): durable choices and open architecture decisions.
-- [Environment template](.env.example): proposed variable names, with no credentials.
-- [Foundation verification](docs/FOUNDATION_VERIFICATION.md): completed checks and remaining application work.
-
-Read the Qloo reference before implementing or changing API calls. Recheck its linked official documentation when choosing parameters or investigating a changed response.
+- [Setup](docs/SETUP.md): account, model and database configuration; outstanding gates.
+- [Backend verification](docs/PROTOTYPE_BACKEND_VERIFICATION.md): observed checks and limitations.
+- [Build plan](docs/BUILD_PLAN.md): workflow, matching contract and checkpoints.
+- [Qloo API reference](docs/QLOO_API_REFERENCE.md): usage and official sources.
+- [Resources and deployment](docs/RESOURCES_AND_DEPLOYMENT.md): data, free hosting and scaling.
+- [Decision log](docs/DECISIONS.md): durable choices.
+- [Initial foundation verification](docs/FOUNDATION_VERIFICATION.md): historical first-checkpoint results.

@@ -1,22 +1,31 @@
 # CultureLoop build plan
 
-Prepared October 18, 2026, for a solo entrant. This is an implementation plan; no completed features, API measurements, or user results are implied. The project requires **free tiers only**. Completed checks are recorded in [foundation verification](FOUNDATION_VERIFICATION.md).
+Updated October 21, 2026 for the entrant's revised implementation plan. This version supersedes conflicting earlier decisions. Preserve the existing matcher, Qloo adapter, fixtures, and scaffold; do not restart. **Free tiers only.** Completed checks are recorded in [foundation verification](FOUNDATION_VERIFICATION.md).
 
 ## Product commitment
 
-Help a student society or local book club turn books members have finished into exchanges they would like to accept. Qloo suggests promising matches from declared cultural interests; the application finds feasible two- and three-person exchange cycles.
+Help friends and students exchange physical books locally. Qloo helps participants discover appealing books already offered in their room; participants explicitly shortlist acceptable books; the deterministic solver finds feasible two- and three-person exchanges.
 
 API key application statement:
 
 > CultureLoop is an agent-powered book exchange app that uses Qloo to match people's cultural interests with available books and find two- or three-person swap cycles. The agent explains each suggestion and revises exchanges when a participant declines or a book becomes unavailable.
 
-The launch audience is one existing student society or book club. Test this audience hypothesis with participants before claiming demand or impact.
+The initial audience is a small group of friends or students. Human usefulness remains a hypothesis until consenting participants try the product; do not fabricate research or contact testers without authorization.
+
+## Prototype approval gate
+
+Build the prototype first, following this plan and preserving existing code. The entrant will test it extensively and provide feedback. Do not treat a prototype checkpoint as approval for the final submission version. After explicit prototype approval, incorporate feedback and proceed to final hardening/submission preparation. A hosted prototype is a review environment, not an authorized Devpost submission.
+
+A local prototype may use embedded PostgreSQL in ignored storage while hosted account access is pending. Keep the same transactional store/domain services. Label local persistence and synthetic examples honestly; real Qloo data remains live/private-cache evidence. Embedded local storage is never a substitute for verified hosted persistence or model execution.
+
+The entrant deferred UI implementation until the next work session. This checkpoint covers backend code, verification, setup guidance and publication of source only. Do not treat route handlers as a tested browser prototype.
 
 ## Fixed submission scope
 
 - Physical books; a listing represents a specific physical copy, separate from the Qloo title identity.
 - Guest rooms containing two to six members and up to three offered books per member.
 - Up to three confirmed favorites per member, spanning supported cultural categories.
+- Store explicit acceptable-book shortlists separately from Qloo evidence. Only acceptable books enter matching; shortlisting is not approval. Shortlisted unranked books remain eligible with unknown evidence.
 - A shared inventory and two- or three-person cycles; a member gives and receives one book in a selected cycle.
 - Multiple cycles may be proposed if they do not share members or physical copies.
 - Individual accept/decline controls, book withdrawal, repair, and an exchange summary.
@@ -30,15 +39,18 @@ Exclude payments, shipping, resale pricing, marketplace scraping, social feeds, 
 1. Start: explain the value with a simple exchange-ring illustration; offer Try an example and Create a room.
 2. Room: join through an invite link, choose an alias, add offered books, and confirm resolved book identities.
 3. Interests: search for favorites and confirm canonical matches. Ambiguous results require a selection.
-4. Proposal: show who gives what to whom, availability, per-recipient evidence, and acceptance status.
-5. Review and repair: a member declines a transfer or withdraws a copy; regenerate only the affected proposals and evidence.
-6. Agreement: after unanimous approval and successful inventory holds, display a shareable/printable exchange summary.
+4. Shortlist: review the room's Qloo-ranked books and explicitly mark acceptable titles. Preserve rankings when willingness changes.
+5. Proposal: show who gives what to whom, availability, evidence origin, unknown ranks, and decisions.
+6. Review and repair: decline or withdraw; preserve unchanged disjoint cycles and approvals. Changed cycles require fresh approval. Never widen willingness automatically.
+7. Agreement: after unanimous approval and transactional inventory holds, display a printable exchange summary.
 
 Desktop can use an exchange ring plus evidence panel. Mobile uses an ordered transfer list with the same information. Chat is a supporting control for requests such as Find another exchange or Explain this choice; the primary workflow uses visible buttons.
 
 ## Technical architecture
 
 Default implementation: TypeScript, Next.js for the web application, eve for one tool-calling agent, and SQL storage for room and exchange state. Use AI Gateway for the model, with its model ID and access configured at implementation time. Pin installed versions and read their shipped documentation before writing integration code.
+
+Timebox eve's free hosted round trip to four focused implementation hours. If access or complexity prevents success, use one bounded AI SDK agent inside Next.js, retaining shared domain services. Record focused time and the actual failure before switching. Missing free inference blocks either framework; fallback does not solve model access.
 
 The eve frontend documentation describes a Next.js integration. Verify one browser-to-agent round trip and public guest access in an early deployment before expanding the interface. Public entry must not require a judge to join the entrant's hosting team.
 
@@ -65,8 +77,9 @@ Accept, decline, and withdraw are participant actions handled by application rou
 - Book identity: canonical title ID and user-confirmed identifying information.
 - Listing: physical-copy ID, owner, book identity, condition, availability.
 - Taste evidence: member, catalog snapshot, request inputs, retrieval time, ranks, returned explanation status, live/cache origin.
+- Shortlist decision: member, canonical book, acceptable flag and change revision; separate from evidence snapshots.
 - Proposal: revision, transfers, evidence references, lifecycle state.
-- Decision: member, proposal revision, accept/decline, timestamp.
+- Decision: member, cycle revision and exact displayed transfers, accept/decline, timestamp. Unrelated room changes do not reset unchanged cycles.
 - Hold: physical copy, approved proposal, expiration/status.
 
 Room links allow joining; possession of the general room link must not let someone approve for another member. An anonymous guest can own a membership through a private cookie without a full account system.
@@ -83,7 +96,7 @@ Prepare 20-30 candidate book titles and five different cultural interest profile
 4. Change one taste input while holding the catalog fixed; record whether rankings change.
 5. Measure latency and count requests for an initial three-member room.
 
-Advance when at least 20 usable book identities resolve, fixed-catalog rankings return usable evidence, and the data supports visibly different proposals in some documented scenarios. These are project acceptance targets, not promises about the API.
+Advance when live coverage and variation across five distinct profiles are useful, with missing results, explanation status, latency, and request usage recorded. Target 20 usable identities; reaching that number alone does not pass the gate. Narrow the supported catalog when observed coverage warrants it.
 
 If explanations are unavailable, show verified request provenance and rank evidence. Never manufacture a specific because-you-like explanation. If coverage is thin, narrow the supported catalog using explicit coverage labels. If rankings remain uninformative, revisit the matching interaction before adding features. Do not present model-generated taste scores as Qloo output.
 
@@ -93,20 +106,19 @@ Keep real responses and research notes in ignored private storage. Use independe
 
 Enumerate cycles of length two or three. Every transfer must reference an available listing, and each participating member must give and receive exactly one item. A person cannot receive their own copy. Selected cycles cannot reuse a member or listing.
 
-Qloo rankings generate suggested recipients. Explicit participant wishes and vetoes override suggestions. Label an edge's evidence as Qloo-suggested or explicitly requested; absent ranking evidence means unknown, not dislike. Participant acceptance remains necessary.
+Only explicitly shortlisted acceptable books generate transfer edges. Qloo rank evidence stays separate and unchanged when a participant shortlists. Absent evidence is unknown, not dislike. Shortlisted unranked books remain eligible; zero is only their documented solver tie-break contribution, never a displayed affinity. Shortlisting is not approval.
 
 Use within-catalog ranks for the product's ranking heuristic; do not assume raw scores from separate profiles are directly comparable. For supported proposals, prefer more members served, then the strongest weakest recipient rank, then total rank utility. Document the heuristic, ties, and candidate pool. Never label rank utility as a probability of enjoyment.
 
-Proposal states: draft -> awaiting decisions -> held after unanimous approval -> organizer-recorded completion, or declined/stale/expired. Approval applies only to the displayed revision. Changes to transfers invalidate affected approvals. Final holds are acquired in one transaction after checking both availability and revision. Conflicting or repeated requests must not allocate a copy twice.
+Cycle states: awaiting decisions -> held after unanimous approval -> explicitly recorded completion, or declined/stale/expired. Approval applies to that cycle's revision and displayed transfers. Preserve unchanged disjoint cycles and approvals during repair; changed cycles start fresh. Acquire holds transactionally after checking availability/revision; retries are idempotent. Withdrawal releases affected holds. Completed exchanges cannot be rewritten. Provider failure preserves existing proposals.
 
 ## Milestones and acceptance checks
 
 | Target | Deliverable | Completion condition |
 | --- | --- | --- |
-| Oct 18-19 | Foundation and feasibility preparation | Plan saved; seed title list; synthetic cycle cases; basic web-to-agent round trip; API probe ready |
-| As soon as key arrives | Live Qloo feasibility | Canonical IDs and actual fixed-catalog responses inspected; limits recorded privately |
-| Oct 20-22 | First complete workflow | Three people add books/interests and receive a valid proposal; early hosted preview works |
-| Oct 23-25 | Decisions and repair | Separate participants accept/decline; withdrawal produces a valid revision; stale approvals are rejected |
+| Oct 21-22 | External gates | Useful live Qloo evidence; free hosting/database/model verified; hosted tool round trip (eve timebox applies) |
+| Oct 22-24 | Persistent workflow | Separate browser members offer books, shortlist, get a live proposal, and reload; early hosted preview |
+| Oct 24-25 | Decisions and repair | Unchanged cycles retain approvals; withdrawal/decline repair and transactional holds pass |
 | Oct 26-27 | User validation | Consenting participants try blind comparisons; acceptance, usability, latency, and failures are recorded |
 | Oct 28-29 | Submission candidate | Public guest flow, mobile layout, exports, run instructions, license, and Devpost draft complete |
 | Oct 30 | Final verification and submission | Fresh-browser end-to-end pass; live demo and public source submitted with time buffer |
@@ -117,7 +129,7 @@ If key delivery shifts, overlap independent tasks and protect the final verifica
 
 ## Verification and evidence
 
-Meaningful automated cases: a direct swap; a three-person cycle without a direct swap; incompatible inventories; duplicate physical copies of the same title; own-item exclusions; overlapping cycles; missing/tied ranks; withdrawn inventory; stale approvals; concurrent holds; cross-room access rejection.
+Meaningful automated cases: direct/three-person swaps; physical-copy identity; own-item exclusions; overlapping cycles; rank preservation during shortlisting; shortlisted unknown evidence; unchanged-cycle approval preservation; stale revisions; concurrent holds; retries; cross-room access rejection; persistence and provider failures.
 
 Browser acceptance: create and join in separate sessions, edit inventory, resolve interests, generate, inspect evidence, decline/withdraw, repair, unanimously accept, reload, and export. Check mobile and desktop plus API timeout/quota responses. A failed repair preserves the last valid proposal with its stale/current status visible.
 
@@ -147,7 +159,7 @@ Implementation work covers scaffolding, adapters, matching, UI, persistence, age
 
 See [foundation verification](FOUNDATION_VERIFICATION.md) for completed checks and remaining implementation work.
 
-Next deliverable: a local three-member room using labeled synthetic evidence to verify cycle formation, plus the live Qloo probe ready for key configuration. Then replace synthetic evidence with inspected live responses before demonstrating the core taste feature as complete.
+Next checkpoint: useful live Qloo evidence plus a free hosted agent/tool round trip. Continue independent shortlist, state, and verification work when account access blocks hosting; never substitute synthetic evidence for a failed live gate.
 
 ## Sources
 

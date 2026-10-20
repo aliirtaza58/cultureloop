@@ -1,6 +1,6 @@
 # Qloo API reference
 
-Reviewed October 18, 2026. Based on the [official hackathon guide](https://docs.qloo.com/reference/qloo-llm-hackathon-developer-guide#getting-your-api-key) read during project research. Recheck the live source for changes.
+Reviewed October 21, 2026. The full [official hackathon guide](https://docs.qloo.com/reference/qloo-llm-hackathon-developer-guide#getting-your-api-key), Search Entities, Entity Type Parameter Guide, and Insights reference were downloaded and read after the web reader failed. Original snapshots remain private; this file contains implementation notes only.
 
 - Request a key through the guide's form. Provisioning is manual; allow several business days and check spam.
 - Hackathon base: `https://hackathon.api.qloo.com`. Event keys do not authenticate against production or staging.
@@ -27,4 +27,6 @@ Send cultural signals without personal identifiers. Affinity describes aggregate
 - [Entity search](https://docs.qloo.com/reference/get-search)
 - [Official starter kit](https://github.com/qloo/qloo-hackathon-kit)
 
-Live calls with the entrant's key have not yet been tested. Validate fixed-catalog ranking and explanation availability before depending on either in the interface.
+Live authentication/search passed on October 21 using the ignored .env file. Search uses `types` arrays; observed Insights rows use generic `type: urn:entity` plus `subtype: urn:entity:book`. Validate both shapes. Fixed-catalog coverage and variation are separate checks. The book parameter guide documents filter.results.entities and signal.interests.entities. Observe actual explainability availability before depending on it.
+
+Local scripts load ignored .env followed by .env.local. Shell variables retain Node's precedence. Never publish a populated environment. Feasibility runs allow at most 35 requests, no automatic retry, with private caching and count-only console summaries.
