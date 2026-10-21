@@ -1,0 +1,46 @@
+/* CultureLoop application tokens: warm paper, book brown, reading typography. */
+:root {
+  --color-paper: oklch(97% 0.014 80);
+  --color-surface: oklch(99% 0.006 80);
+  --color-paper-deep: oklch(93% 0.025 80);
+  --color-ink: oklch(25% 0.025 55);
+  --color-muted: oklch(46% 0.025 60);
+  --color-rule: oklch(80% 0.025 75);
+  --color-control: oklch(58% 0.035 70);
+  --color-accent: oklch(40% 0.09 45);
+  --color-accent-soft: oklch(92% 0.036 65);
+  --color-focus: oklch(44% 0.12 45);
+  --color-error: oklch(43% 0.15 28);
+  --color-error-soft: oklch(95% 0.025 28);
+  --color-success: oklch(37% 0.065 145);
+  --color-success-soft: oklch(93% 0.025 145);
+  --color-cover-oat: oklch(88% 0.045 75);
+  --color-cover-sage: oklch(86% 0.035 135);
+  --color-cover-blue: oklch(86% 0.026 235);
+  --color-cover-rose: oklch(88% 0.03 30);
+  --font-display: "Cormorant Garamond", Georgia, serif;
+  --font-body: "Crimson Pro", Georgia, serif;
+  --text-sm: 0.9375rem;
+  --text-base: 1.125rem;
+  --text-md: 1.375rem;
+  --text-lg: 2rem;
+  --text-display: clamp(2.6rem, 4.8vw, 4.6rem);
+  --text-room-title: clamp(2.3rem, 4vw, 3.4rem);
+  --text-wordmark-small: 1.65rem;
+  --text-cover-small: 1.05rem;
+  --text-cover-note: 0.875rem;
+  --z-raised: 10;
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2.5rem;
+  --space-2xl: 4rem;
+  --space-3xl: 6rem;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --rule-thin: 1px;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-micro: 120ms;
+  --dur-short: 220ms;
+}

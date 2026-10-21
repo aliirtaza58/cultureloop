@@ -1,6 +1,6 @@
 # Prototype setup
 
-Updated October 21, 2026. Free tiers only. This is account preparation, not evidence that deployment is complete. UI implementation is deferred to the next work session.
+Updated October 22, 2026. Free tiers only. The local UI is available; no hosted deployment or live model turn is verified. To review the local example without account provisioning, run `npm ci`, `npm run setup:local`, then `npm run dev:local` and open http://127.0.0.1:3017. Setup generates/preserves the session secret without displaying it. See [the README](../README.md) for the review flow.
 
 ## What each service does
 
@@ -11,7 +11,8 @@ Updated October 21, 2026. Free tiers only. This is account preparation, not evid
 | AI Gateway / `AI_GATEWAY_API_KEY` | Authenticates the assistant's model requests; separate from Qloo and Vercel account tokens |
 | `AI_GATEWAY_MODEL` | Exact model ID, eligible for free credit and capable of tool calling |
 | PostgreSQL / `DATABASE_URL` | Persists private rooms, decisions, holds and Qloo cache |
-| `SESSION_SECRET` | Signs temporary selections of server-resolved identities; private, at least 32 random characters |
+| `SESSION_SECRET` | Signs temporary selections of server-resolved identities; setup:local generates/preserves it privately |
+| `CULTURELOOP_APP_ORIGIN` | Exact public origin used for request validation; dev:local supplies http://127.0.0.1:3017 |
 
 There is no additional “Qloo agent key.” The assistant will call shared application services. Qloo ranks books; the assistant cannot approve exchanges for real participants.
 
@@ -20,7 +21,7 @@ There is no additional “Qloo agent key.” The assistant will call shared appl
 1. Sign into [Vercel](https://vercel.com/dashboard) using your intended account.
 2. Select your intended workspace in the dashboard workspace selector. Open its Settings / Billing and confirm **Hobby**, not a Pro trial. An unfamiliar workspace name may still be yours; verify ownership and plan rather than renaming or upgrading it.
 3. If the connected Vercel app is authorized against another account, open its connection settings and reconnect while signed into the intended account. Use the authorization flow; never paste a Vercel token into chat. If the same workspace remains visible, provide its non-secret slug and confirm its plan so the target can be checked.
-4. A fresh CultureLoop project does not exist yet. Prepare account access now; link/create the project after the web/runtime scaffold is ready. Importing the repository today would not establish a working deployment.
+4. The local web scaffold is ready; a CultureLoop hosting project does not exist yet. Confirm account/plan access before linking the project or provisioning shared resources. Importing alone does not establish a working deployment or agent.
 
 [Hobby documentation](https://vercel.com/docs/plans/hobby). If dashboard access works but the connector remains on another account, a local CLI login is an alternative: `npx vercel@latest login`, then `npx vercel@latest switch` to select the intended workspace. This CLI login does not reconnect the app connector. Do not run a deploy command yet. [CLI scope selection](https://vercel.com/docs/cli/switch).
 
@@ -49,12 +50,12 @@ Gateway currently documents $5/month of included credit for a restricted model s
 3. Report only that the free database is ready and its non-secret project/branch name. The implementation session will verify the target, apply [the schema](../db/001_rooms.sql), and test transactions. Keep `CULTURELOOP_HOSTED_DB_VERIFIED=false` until this check. Entering a URL does not establish connectivity or schema installation.
 4. Local embedded PostgreSQL is available for tests and later local prototype development, using `CULTURELOOP_LOCAL_PROTOTYPE=true`. It stores data under ignored `.private/prototype-db`. Never enable embedded storage on Vercel; it is not hosted persistence.
 
-## 4. Deploy and test after the web scaffold is ready
+## 4. Deploy and test after free account access is verified
 
 1. Link the repository to a `cultureloop` project in the confirmed Hobby workspace. Complete the eve/free-service check first; its active implementation timebox is four hours. If it cannot complete a free hosted round trip, use the planned bounded Next.js AI SDK fallback with the same domain services. Neither path bypasses free model eligibility.
-2. In the project's environment settings, add server-only Qloo, database, session-secret and model settings. Use supported project OIDC for Gateway where possible; otherwise store its private Gateway key. Do not use `NEXT_PUBLIC_` for credentials. Confirm database target/plan/schema before enabling the hosted DB opt-in. Keep local embedded mode off.
+2. In the project's environment settings, add server-only Qloo, database, session-secret and model settings, plus `CULTURELOOP_APP_ORIGIN` matching its exact HTTPS origin. Use supported project OIDC for Gateway where possible; otherwise store its private Gateway key. Do not use `NEXT_PUBLIC_` for credentials. Confirm database target/plan/schema before enabling the hosted DB opt-in. Keep local embedded mode off.
 3. Deploy a preview; verify browser → API → database → Qloo/model → response behavior, persistence across reloads, separate participant sessions and transactional holds.
 4. Provide the entrant a working prototype URL for extensive testing and feedback. Obtain explicit prototype approval before final hardening/submission work.
 5. Later, publish a stable public URL without Vercel-team login requirements and test judge access from a fresh browser. Devpost submission remains the entrant's action.
 
-Outstanding: UI, full HTTP/browser integration, free account/model verification, hosted migration/concurrency, real agent tools/hosted round trip, prototype review and final submission preparation. Source code and local tests do not establish those gates.
+Outstanding: entrant prototype review, broader separate-browser usability checks, free account/model verification, hosted migration/concurrency, real agent tools/hosted round trip, public release hardening and final submission preparation. Local HTTP/browser checks do not establish those hosted gates. Local examples and research rooms are fictional; no human usefulness or real physical exchange has been verified.

@@ -3,12 +3,12 @@ import { resolve } from "node:path";
 import { Pool } from "pg";
 import type { SqlConnection, SqlPool } from "./store.ts";
 
-let initialized: Promise<SqlPool> | undefined;
+const runtime = globalThis as typeof globalThis & { cultureloopDatabase?: Promise<SqlPool> };
 
 /** Embedded mode is a persistent local prototype, never a hosted-production fallback. */
 export function database(): Promise<SqlPool> {
-  initialized ??= initialize();
-  return initialized;
+  runtime.cultureloopDatabase ??= initialize();
+  return runtime.cultureloopDatabase;
 }
 async function initialize(): Promise<SqlPool> {
   if (process.env.CULTURELOOP_LOCAL_PROTOTYPE === "true") {

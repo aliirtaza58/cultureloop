@@ -7,10 +7,11 @@ import { QlooService, rankingInputs } from "./qloo-service.ts";
 import { rateLimit } from "./limits.ts";
 import { signIdentity, verifyIdentity } from "./confirmations.ts";
 import { offerBook, setInterests } from "../domain/inventory.ts";
-import { acceptCycle, declineCycle, repairExchanges, reportCompletion, shortlistBook, withdrawListing } from "../domain/exchanges.ts";
+import { acceptCycle, declineCycle, expireHolds, repairExchanges, reportCompletion, shortlistBook, withdrawListing } from "../domain/exchanges.ts";
 import type { MemberActor } from "../domain/exchanges.ts";
 import type { SearchType } from "../integrations/qloo.ts";
 import { z } from "zod";
+import { agreementText } from "../domain/agreement.ts";
 
 const cookieName = "cultureloop_guest";
 let qloo: QlooService | undefined;
@@ -30,7 +31,8 @@ export function requireSession(request: Request): string {
   return token;
 }
 export async function body(request: Request): Promise<unknown> {
-  if (request.headers.get("origin") !== new URL(request.url).origin) throw new Error("Use the app's own page to make changes.");
+  const expectedOrigin = new URL(process.env.CULTURELOOP_APP_ORIGIN ?? request.url).origin;
+  if (request.headers.get("origin") !== expectedOrigin) throw new Error("Use the app's own page to make changes.");
   if (!request.headers.get("content-type")?.startsWith("application/json")) throw new Error("Expected a JSON request.");
   if (Number(request.headers.get("content-length") ?? 0) > 16000) throw new Error("Request is too large.");
   const reader = request.body?.getReader();
@@ -85,8 +87,21 @@ export async function enter(request: Request): Promise<Response> {
   return privateJson(result, 200, session);
 }
 export async function readRoom(request: Request, id: string): Promise<Response> {
+  const session = requireSession(request);
   const { store } = await services();
-  return privateJson({ view: await store.read(id, requireSession(request)) });
+  let view = await store.read(id, session);
+  if (view.room.holds.some(hold => hold.expiresAt <= Date.now())) {
+    view = await store.mutate(id, session, current => expireHolds(current.room, Date.now()));
+  }
+  return privateJson({ view });
+}
+export async function downloadAgreement(request: Request, id: string): Promise<Response> {
+  const session = requireSession(request), { store } = await services();
+  const view = await store.read(id, session);
+  return new Response(agreementText(view.room, view.members, Date.now()), { headers: {
+    "Content-Type": "text/plain; charset=utf-8", "Content-Disposition": 'attachment; filename="cultureloop-agreement.txt"',
+    "Cache-Control": "private, no-store", "X-Content-Type-Options": "nosniff",
+  } });
 }
 export async function searchRoom(request: Request, id: string): Promise<Response> {
   const session = requireSession(request), { store, pool } = await services();
@@ -102,6 +117,8 @@ export async function searchRoom(request: Request, id: string): Promise<Response
 const command = z.discriminatedUnion("type", [
   z.object({ type: z.literal("offer"), proof: z.string().max(2000) }),
   z.object({ type: z.literal("interests"), proofs: z.array(z.string().max(2000)).max(3) }),
+  z.object({ type: z.literal("add-interest"), proof: z.string().max(2000) }),
+  z.object({ type: z.literal("remove-interest"), entityId: z.uuid() }),
   z.object({ type: z.literal("shortlist"), bookId: z.string().min(1).max(200), acceptable: z.boolean() }),
   z.object({ type: z.literal("withdraw"), listingId: z.string().min(1).max(200) }),
   z.object({ type: z.literal("generate") }), z.object({ type: z.literal("rank") }),
@@ -133,6 +150,13 @@ export async function act(request: Request, id: string): Promise<Response> {
     switch (action.type) {
       case "offer": return offerBook(room, actor, verifyIdentity(action.proof, session, process.env.SESSION_SECRET ?? "", now), randomUUID());
       case "interests": return setInterests(room, actor, action.proofs.map(proof => verifyIdentity(proof, session, process.env.SESSION_SECRET ?? "", now)));
+      case "add-interest": return setInterests(room, actor, [
+        ...(room.interests ?? []).filter(i => i.memberId === actor.memberId).map(i => ({ id: i.entityId, name: i.name, types: [i.type] })),
+        verifyIdentity(action.proof, session, process.env.SESSION_SECRET ?? "", now),
+      ]);
+      case "remove-interest": return setInterests(room, actor, (room.interests ?? [])
+        .filter(i => i.memberId === actor.memberId && i.entityId !== action.entityId)
+        .map(i => ({ id: i.entityId, name: i.name, types: [i.type] })));
       case "shortlist": return shortlistBook(room, actor, action.bookId, action.acceptable);
       case "withdraw": return withdrawListing(room, actor, action.listingId);
       case "generate":

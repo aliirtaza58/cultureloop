@@ -16,6 +16,8 @@ Reviewed October 21, 2026. The full [official hackathon guide](https://docs.qloo
 
 ## Additional organizer guidance
 
+The downloaded kit was reviewed on October 22. See [kit integration notes](QLOO_KIT_NOTES.md): its local stdio MCP starter is not supported on serverless functions, its docs MCP requires no key, and the archive supplies no taste dataset. Keep the existing HTTP adapter for the planned Next.js runtime; do not confuse harness workflow envelopes with raw API responses.
+
 Use individually attributable credentials, bounded retries, and small requests. Keep keys out of browser bundles, logs, and repositories. See [API access](https://github.com/qloo/qloo-hackathon-kit/blob/main/docs/API_ACCESS.md).
 
 Send cultural signals without personal identifiers. Affinity describes aggregate relationships, not personal enjoyment probabilities. Keep Qloo evidence distinct from application interpretation. See [safe use](https://github.com/qloo/qloo-hackathon-kit/blob/main/docs/SAFE_USE.md).

@@ -10,10 +10,14 @@
   "scripts": {
     "test": "node --test tests/*.test.ts",
     "demo": "node scripts/demo.ts",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "next typegen && tsc --noEmit",
+    "dev:local": "node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/dev-local.ts",
+    "setup:local": "node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/setup-local.ts",
+    "build": "next build",
+    "start": "next start",
+    "verify:local": "node scripts/verify-local.ts",
     "qloo:probe": "node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/probe-qloo.ts",
     "qloo:verify": "node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/verify-qloo.ts",
-    "setup:check": "node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/check-setup.ts",
     "setup:check": "node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/check-setup.ts",
     "agent:dev": "eve dev",
     "agent:build": "eve build"

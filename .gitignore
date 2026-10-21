@@ -58,6 +58,8 @@ __pycache__/
 
 # Retain the user's original skill archive locally.
 ui-ux-pro-max-skill-main.zip
+qloo-hackathon-kit-main.zip
+/qloo-hackathon-kit-main/
 
 # Local databases
 *.db

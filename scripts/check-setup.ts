@@ -1,4 +1,5 @@
 /** Read-only setup diagnostics. Never prints credentials or provider response bodies. */
+export {};
 const present = (name: string) => Boolean(process.env[name]?.trim());
 const gateway = process.argv.includes("--gateway");
 const names = ["QLOO_API_KEY", "AI_GATEWAY_API_KEY", "AI_GATEWAY_MODEL", "DATABASE_URL", "SESSION_SECRET"];

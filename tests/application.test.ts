@@ -21,6 +21,23 @@ test("session cookies require a private capability and responses prohibit cachin
   assert.equal(response.headers.get("cache-control"), "private, no-store");
 });
 
+test("explicit app origin handles server hostname normalization without allowing another origin", async () => {
+  const previous = process.env.CULTURELOOP_APP_ORIGIN;
+  process.env.CULTURELOOP_APP_ORIGIN = "http://127.0.0.1:3017";
+  try {
+    const request = (origin: string) => new Request("http://localhost:3017/api/rooms", {
+      method: "POST", headers: { origin, "content-type": "application/json" }, body: "{}",
+    });
+    assert.deepEqual(await body(request("http://127.0.0.1:3017")), {});
+    await assert.rejects(body(request("http://127.0.0.1:3000")), /own page/);
+    await assert.rejects(body(request("https://other.test")), /own page/);
+    await assert.rejects(body(request("null")), /own page/);
+  } finally {
+    if (previous === undefined) delete process.env.CULTURELOOP_APP_ORIGIN;
+    else process.env.CULTURELOOP_APP_ORIGIN = previous;
+  }
+});
+
 test("untrusted driver errors do not expose private connection details", async () => {
   const original = console.error;
   const logs: unknown[][] = [];
