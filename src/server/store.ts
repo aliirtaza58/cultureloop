@@ -39,9 +39,8 @@ export class RoomStore {
     } catch (error) { await connection.query("ROLLBACK"); throw error; }
     finally { connection.release(); }
   }
-  async #read(connection: SqlConnection, roomId: string, sessionToken: string, lock: boolean): Promise<RoomView> {
+  async #read(connection: SqlConnection, roomId: string, sessionHash: string, lock: boolean): Promise<RoomView> {
     identifier(roomId);
-    const sessionHash = session(sessionToken);
     // Check membership before loading private room state; lock the room for every mutation.
     const memberships = await connection.query<{ member_id: string; alias: string }>(
       "SELECT member_id, alias FROM cultureloop_memberships WHERE room_id = $1 AND session_hash = $2", [roomId, sessionHash]);
@@ -60,7 +59,7 @@ export class RoomStore {
       actor: { roomId, memberId: member.member_id } };
   }
   async read(roomId: string, sessionToken: string): Promise<RoomView> {
-    return this.#transaction(connection => this.#read(connection, roomId, sessionToken, false));
+    return this.#transaction(connection => this.#read(connection, roomId, session(sessionToken), false));
   }
   async create(sessionToken: string, displayName: string): Promise<{ view: RoomView; inviteToken: string }> {
     const sessionHash = session(sessionToken), display = alias(displayName);
@@ -72,7 +71,7 @@ export class RoomStore {
         [id, hashCapability(inviteToken), JSON.stringify(room), room.revision]);
       await connection.query("INSERT INTO cultureloop_memberships (room_id, member_id, session_hash, alias) VALUES ($1, $2, $3, $4)",
         [id, memberId, sessionHash, display]);
-      return { view: await this.#read(connection, id, sessionToken, false), inviteToken };
+      return { view: await this.#read(connection, id, sessionHash, false), inviteToken };
     });
   }
   async join(inviteToken: string, sessionToken: string, displayName: string): Promise<RoomView> {
@@ -84,19 +83,19 @@ export class RoomStore {
       const target = result.rows[0];
       if (!target) throw new Error("Invalid room invitation.");
       const existing = await connection.query("SELECT member_id FROM cultureloop_memberships WHERE room_id = $1 AND session_hash = $2", [target.id, sessionHash]);
-      if (existing.rows.length) return this.#read(connection, target.id, sessionToken, false);
+      if (existing.rows.length) return this.#read(connection, target.id, sessionHash, false);
       if (target.state.memberIds.length >= 6) throw new Error("This room already has six members.");
       const memberId = randomUUID();
       const room = { ...target.state, revision: target.state.revision + 1, memberIds: [...target.state.memberIds, memberId] };
       await connection.query("INSERT INTO cultureloop_memberships (room_id, member_id, session_hash, alias) VALUES ($1, $2, $3, $4)", [target.id, memberId, sessionHash, display]);
       await connection.query("UPDATE cultureloop_rooms SET state = $2::jsonb, revision = $3 WHERE id = $1", [target.id, JSON.stringify(room), room.revision]);
-      return this.#read(connection, target.id, sessionToken, false);
+      return this.#read(connection, target.id, sessionHash, false);
     });
   }
   async createExample(sessionToken: string): Promise<RoomView> {
     const created = await this.create(sessionToken, "Aria (fictional)");
     return this.#transaction(async connection => {
-      const base = await this.#read(connection, created.view.room.id, sessionToken, true);
+      const base = await this.#read(connection, created.view.room.id, session(sessionToken), true);
       const ids: Record<string, string> = { aria: base.actor.memberId, ben: randomUUID(), cyra: randomUUID() };
       for (const name of ["ben", "cyra"]) {
         await connection.query("INSERT INTO cultureloop_memberships (room_id,member_id,session_hash,alias) VALUES ($1,$2,$3,$4)",
@@ -113,13 +112,26 @@ export class RoomStore {
       };
       await connection.query("UPDATE cultureloop_rooms SET state=$2::jsonb, revision=$3 WHERE id=$1",
         [room.id, JSON.stringify(room), room.revision]);
-      return this.#read(connection, room.id, sessionToken, false);
+      return this.#read(connection, room.id, session(sessionToken), false);
     });
   }
   /** Every decision rechecks membership and locks the room before reading or writing holds. */
   async mutate(roomId: string, sessionToken: string, operation: (view: RoomView) => ExchangeRoom): Promise<RoomView> {
+    return this.#mutate(roomId, session(sessionToken), operation);
+  }
+  /** Internal runtime bridge. Only a verified channel principal may supply this hash.
+   * Never expose this method through a route accepting a caller-supplied principal. */
+  forAssistant(roomId: string, verifiedSessionHash: string) {
+    identifier(roomId);
+    if (!/^[a-f0-9]{64}$/.test(verifiedSessionHash)) throw new Error("Room membership required.");
+    return {
+      read: () => this.#transaction(connection => this.#read(connection, roomId, verifiedSessionHash, false)),
+      mutate: (operation: (view: RoomView) => ExchangeRoom) => this.#mutate(roomId, verifiedSessionHash, operation),
+    };
+  }
+  async #mutate(roomId: string, sessionHash: string, operation: (view: RoomView) => ExchangeRoom): Promise<RoomView> {
     return this.#transaction(async connection => {
-      const view = await this.#read(connection, roomId, sessionToken, true);
+      const view = await this.#read(connection, roomId, sessionHash, true);
       const next = operation(view);
       if (next === view.room) return view;
       if (next.id !== roomId || next.revision <= view.room.revision) throw new Error("Invalid room revision transition.");

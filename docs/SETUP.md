@@ -39,7 +39,7 @@ There is no additional “Qloo agent key.” The assistant will call shared appl
    ```
 
    The second command only reads the public model catalog and authenticated credit endpoint. Expected metadata checks: `configuredModelInCatalog: true`, `gatewayCreditsHttp: 200`. A 401 means the key is invalid or inaccessible; create/check a key in the correct workspace. Diagnostics never print keys or provider response bodies.
-6. Confirm the workspace slug and that free credit is available/top-ups are off. The implementation session must still verify account eligibility and one bounded real tool-calling turn. HTTP 200/catalog membership alone do not pass that gate.
+6. Confirm the workspace slug and that free credit is available/top-ups are off. The implementation session must still verify account eligibility and one bounded real tool-calling turn. HTTP 200/catalog membership alone do not pass that gate. Keep `CULTURELOOP_FREE_AI_VERIFIED=false` until free eligibility, credentials and disabled top-ups have been checked; setting the flag is not evidence of verification.
 
 Gateway currently documents $5/month of included credit for a restricted model subset. This is a metered allowance, not unlimited free inference. [Pricing and free eligibility](https://vercel.com/docs/ai-gateway/pricing).
 

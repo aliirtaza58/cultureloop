@@ -35,7 +35,7 @@ export function roomAssistantTools(access: RoomAccess, qloo: RoomQloo,
   limit: (name: AssistantToolName) => Promise<void>, clock: () => number = Date.now) {
   return {
     async invoke(name: AssistantToolName, input: unknown): Promise<unknown> {
-      const schema = assistantSchemas[name];
+      const schema = Object.hasOwn(assistantSchemas, name) ? assistantSchemas[name] : undefined;
       if (!schema) throw new Error("Unknown assistant tool.");
       const parsed = schema.parse(input);
       // Check membership before rate limits or provider access, on every tool invocation.

@@ -9,6 +9,8 @@ import type { RoomQloo } from "../src/server/room-operations.ts";
 import { rankingInputs } from "../src/server/qloo-service.ts";
 import { roomAssistantTools } from "../src/server/assistant-tools.ts";
 import { shortlistBook } from "../src/domain/exchanges.ts";
+import { assistantPrincipal, authorizeAssistant, requireFreeAssistant } from "../src/server/assistant-access.ts";
+import { sendAssistant, streamAssistant } from "../src/server/assistant-transport.ts";
 
 // Synthetic provider data and embedded PostgreSQL; no model or live Qloo requests.
 const db = await PGlite.create();
@@ -26,6 +28,9 @@ const store = new RoomStore(pool);
 const noProvider: RoomQloo = { async search() { throw new Error("Provider must not run."); },
   async rank() { throw new Error("Provider must not run."); } };
 const noLimit = async () => {};
+const guestRequest = (session: string, suffix = "") => new Request(`http://127.0.0.1:3017/${suffix}`, {
+  headers: { cookie: `cultureloop_guest=${session}` },
+});
 
 test("agent reads redact aliases/capabilities and cannot invent willingness", async () => {
   const session = newCapability(), view = await store.createExample(session);
@@ -125,4 +130,98 @@ test("identity lookup returns candidates requiring confirmation and makes no cha
   const result = await tools.invoke("resolve_entities", { query: "Synthetic candidate", category: "book" }) as { confirmationRequired: boolean };
   assert.equal(result.confirmationRequired, true);
   assert.deepEqual((await store.read(view.room.id, session)).room, view.room);
+});
+
+test("conversation addresses are bound to the verified room and private guest", async () => {
+  const a = newCapability(), b = newCapability(), created = await store.create(a, "Alias A");
+  await store.join(created.inviteToken, b, "Alias B");
+  const first = await authorizeAssistant(guestRequest(a), created.view.room.id, store);
+  const second = await authorizeAssistant(guestRequest(b), created.view.room.id, store);
+  assert.notEqual(first.address, second.address);
+  assert.equal((await authorizeAssistant(guestRequest(a), created.view.room.id, store)).address, first.address);
+  const json = JSON.stringify(first);
+  assert.ok(!json.includes(a) && !json.includes(created.inviteToken) && !json.includes("Alias A"));
+  await assert.rejects(authorizeAssistant(guestRequest(created.inviteToken), created.view.room.id, store), /membership/);
+  const another = await store.create(a, "Other room");
+  assert.notEqual((await authorizeAssistant(guestRequest(a), another.view.room.id, store)).address, first.address);
+  await assert.rejects(authorizeAssistant(guestRequest(b), another.view.room.id, store), /membership/);
+});
+
+test("internal principal reads recheck membership and cannot cross rooms", async () => {
+  const session = newCapability(), created = await store.create(session, "Scoped reader");
+  const caller = await authorizeAssistant(guestRequest(session), created.view.room.id, store);
+  const scoped = store.forAssistant(created.view.room.id, caller.auth.principalId);
+  assert.equal((await scoped.read()).actor.memberId, created.view.actor.memberId);
+  const other = await store.create(newCapability(), "Unrelated reader");
+  await assert.rejects(store.forAssistant(other.view.room.id, caller.auth.principalId).read(), /membership/);
+  assert.throws(() => store.forAssistant(created.view.room.id, session), /membership/);
+  await db.query("DELETE FROM cultureloop_memberships WHERE room_id=$1", [created.view.room.id]);
+  await assert.rejects(scoped.read(), /membership/);
+  await assert.rejects(scoped.mutate(view => view.room), /membership/);
+});
+
+test("runtime tools require a current verified principal and never inherit an initiator", () => {
+  for (const value of [null, undefined, {}, { principalType: "runtime" },
+    { authenticator: "local-dev", principalType: "user", principalId: "f".repeat(64), attributes: {} }]) {
+    assert.throws(() => assistantPrincipal(value), /membership/);
+  }
+});
+
+test("a supplied transcript ID cannot select another member's conversation", async () => {
+  const a = newCapability(), b = newCapability(), created = await store.create(a, "A");
+  await store.join(created.inviteToken, b, "B");
+  const owner = await authorizeAssistant(guestRequest(a), created.view.room.id, store);
+  const callback = async (address: string) => address === owner.address ?
+    new ReadableStream<Uint8Array>({ start(controller) { controller.enqueue(new TextEncoder().encode("private fixture")); controller.close(); } }) : null;
+  const denied = await streamAssistant(guestRequest(b, "stream?sessionId=known-other-session"), created.view.room.id, store, callback);
+  assert.equal(denied.status, 404);
+  const allowed = await streamAssistant(guestRequest(a), created.view.room.id, store, callback);
+  assert.equal(await allowed.text(), "private fixture");
+  assert.equal(allowed.headers.get("cache-control"), "private, no-store");
+});
+
+test("message transport rejects supplied session/member authority before dispatch", async () => {
+  const session = newCapability(), created = await store.create(session, "Transport reader");
+  let dispatched = false;
+  const request = new Request("http://127.0.0.1:3017/messages", { method: "POST",
+    headers: { origin: "http://127.0.0.1:3017", "content-type": "application/json", cookie: `cultureloop_guest=${session}` },
+    body: JSON.stringify({ message: "Read room", sessionId: "other-session", memberId: "other-member" }) });
+  await assert.rejects(sendAssistant(request, created.view.room.id, store, pool, async () => { dispatched = true; return { id: "fixture" }; }));
+  assert.equal(dispatched, false);
+});
+
+test("free inference remains disabled without explicit verification and credentials", () => {
+  const names = ["CULTURELOOP_FREE_AI_VERIFIED", "AI_GATEWAY_MODEL", "AI_GATEWAY_API_KEY", "VERCEL_OIDC_TOKEN"] as const;
+  const before = Object.fromEntries(names.map(name => [name, process.env[name]]));
+  try {
+    for (const name of names) delete process.env[name];
+    assert.throws(requireFreeAssistant, /waiting for verified free/);
+    process.env.CULTURELOOP_FREE_AI_VERIFIED = "true";
+    assert.throws(requireFreeAssistant, /not configured/);
+  } finally { for (const name of names) { if (before[name] === undefined) delete process.env[name]; else process.env[name] = before[name]; } }
+});
+
+test("synthetic dispatch binds the caller and persists the hourly message limit", async () => {
+  const names = ["CULTURELOOP_FREE_AI_VERIFIED", "AI_GATEWAY_MODEL", "AI_GATEWAY_API_KEY"] as const;
+  const before = Object.fromEntries(names.map(name => [name, process.env[name]]));
+  try {
+    // Explicit fake transport fixture; this does not validate model access or call a provider.
+    process.env.CULTURELOOP_FREE_AI_VERIFIED = "true";
+    process.env.AI_GATEWAY_MODEL = "synthetic/no-inference";
+    process.env.AI_GATEWAY_API_KEY = "synthetic-no-provider-request";
+    const session = newCapability(), created = await store.create(session, "Dispatch fixture");
+    const caller = await authorizeAssistant(guestRequest(session), created.view.room.id, store);
+    let dispatched = 0;
+    const request = () => new Request("http://127.0.0.1:3017/messages", { method: "POST",
+      headers: { origin: "http://127.0.0.1:3017", "content-type": "application/json", cookie: `cultureloop_guest=${session}` },
+      body: JSON.stringify({ message: "Read my room" }) });
+    const send = async (address: string, text: string, auth: typeof caller.auth) => {
+      assert.equal(address, caller.address); assert.equal(text, "Read my room"); assert.deepEqual(auth, caller.auth);
+      dispatched++; return { id: "synthetic-session" };
+    };
+    for (let n = 0; n < 20; n++) assert.equal((await sendAssistant(request(), created.view.room.id, store, pool, send)).status, 200);
+    await assert.rejects(sendAssistant(request(), created.view.room.id, store, pool, send), /Request limit/);
+    assert.equal(dispatched, 20);
+    assert.deepEqual((await store.read(created.view.room.id, session)).room.cycles, []);
+  } finally { for (const name of names) { if (before[name] === undefined) delete process.env[name]; else process.env[name] = before[name]; } }
 });
