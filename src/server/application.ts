@@ -3,11 +3,12 @@ import { database } from "./database.ts";
 import { newCapability, RoomStore } from "./store.ts";
 import type { RoomView, SqlPool } from "./store.ts";
 import { QlooClient, QlooError } from "../integrations/qloo.ts";
-import { QlooService, rankingInputs } from "./qloo-service.ts";
+import { QlooService } from "./qloo-service.ts";
+import { roomAccess, rankRoom, findRoomExchanges } from "./room-operations.ts";
 import { rateLimit } from "./limits.ts";
 import { signIdentity, verifyIdentity } from "./confirmations.ts";
 import { offerBook, setInterests } from "../domain/inventory.ts";
-import { acceptCycle, declineCycle, expireHolds, repairExchanges, reportCompletion, shortlistBook, withdrawListing } from "../domain/exchanges.ts";
+import { acceptCycle, declineCycle, expireHolds, reportCompletion, shortlistBook, withdrawListing } from "../domain/exchanges.ts";
 import type { MemberActor } from "../domain/exchanges.ts";
 import type { SearchType } from "../integrations/qloo.ts";
 import { z } from "zod";
@@ -134,16 +135,14 @@ export async function act(request: Request, id: string): Promise<Response> {
   await rateLimit(pool, `action:${id}:${session}`, 180);
   const now = Date.now(), action = input.command;
   if (action.type === "rank") {
-    const view = await store.read(id, session);
-    if (view.room.mode === "example") throw new Error("Example simulation uses labeled synthetic rankings.");
+    await store.read(id, session);
     await rateLimit(pool, `rank:${id}`, 10);
-    const ranked = await qlooService(pool).rank(view.room);
-    const next = await store.mutate(id, session, current => {
-      if (rankingInputs(current.room) !== ranked.inputs) throw new Error("Room changed; refresh the rankings again.");
-      return { ...current.room, revision: current.room.revision + 1, preferences: ranked.evidence,
-        evidenceSnapshots: [...(current.room.evidenceSnapshots ?? []), ...ranked.snapshots] };
-    });
+    const next = await rankRoom(roomAccess(store, id, session), qlooService(pool));
     return privateJson({ view: next });
+  }
+  if (action.type === "generate") {
+    actingMember(await store.read(id, session), input.simulateMember);
+    return privateJson({ view: await findRoomExchanges(roomAccess(store, id, session), now) });
   }
   const view = await store.mutate(id, session, current => {
     const actor = actingMember(current, input.simulateMember), room = current.room;
@@ -159,9 +158,6 @@ export async function act(request: Request, id: string): Promise<Response> {
         .map(i => ({ id: i.entityId, name: i.name, types: [i.type] })));
       case "shortlist": return shortlistBook(room, actor, action.bookId, action.acceptable);
       case "withdraw": return withdrawListing(room, actor, action.listingId);
-      case "generate":
-        if (room.memberIds.length < 2) throw new Error("At least two members must join before matching.");
-        return repairExchanges(room, actor, now);
       case "accept": return acceptCycle(room, actor, action.cycleId, action.revision, now);
       case "decline": return declineCycle(room, actor, action.cycleId, action.revision);
       case "complete": return reportCompletion(room, actor, action.cycleId, action.revision, now);

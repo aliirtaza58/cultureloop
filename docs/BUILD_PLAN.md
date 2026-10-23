@@ -18,7 +18,7 @@ Build the prototype first, following this plan and preserving existing code. The
 
 A local prototype may use embedded PostgreSQL in ignored storage while hosted account access is pending. Keep the same transactional store/domain services. Label local persistence and synthetic examples honestly; real Qloo data remains live/private-cache evidence. Embedded local storage is never a substitute for verified hosted persistence or model execution.
 
-The entrant deferred UI implementation until the next work session. This checkpoint covers backend code, verification, setup guidance and publication of source only. Do not treat route handlers as a tested browser prototype.
+The local warm/bookish prototype was implemented on October 22. Local HTTP/browser and restart checks passed; the hosted prototype and entrant approval remain separate gates. See [assistant verification](ASSISTANT_VERIFICATION.md) for the current tool checkpoint.
 
 ## Fixed submission scope
 

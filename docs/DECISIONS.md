@@ -2,6 +2,13 @@
 
 This log records product and architecture choices, their status, and rationale.
 
+## D015 — Shared assistant operations
+
+- Date: 2026-10-23. Status: application services tested; live runtime pending.
+- Bind assistant tools to server-verified room access. Model arguments cannot select another room/member, create willingness, approve transfers or report completion.
+- Button and assistant ranking/generation use the same operations. The model receives pseudonymous reader labels, evidence provenance and explicit unknowns; guest capabilities and aliases stay outside tool results.
+- Preserve eve and the existing four-hour free hosted gate. Service tests do not establish model execution or hosted access. Evidence: [assistant verification](ASSISTANT_VERIFICATION.md).
+
 ## D001 — Product direction
 
 - Date: 2026-10-18. Status: selected by user.
