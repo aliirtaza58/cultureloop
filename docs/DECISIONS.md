@@ -17,6 +17,13 @@ This log records product and architecture choices, their status, and rationale.
 - Pin just-bash for an in-process sandbox and disable automatic installs/default model tools. Actual hosted Workflow and other resource quotas still require verification.
 - Keep embedded local PostgreSQL limited to one server process at a time. Integrated web/agent services require the verified free hosted database. No architecture fallback or timebox exemption is implied.
 
+## D017 — One web/agent service graph
+
+- Date: 2026-10-25. Status: source configuration and launch guards tested; combined/hosted operation pending.
+- Compose the existing root Next.js app and root eve agent through `eve/vercel`, without moving or restarting the project. Route only the custom room-assistant endpoints to eve; keep existing room APIs on web.
+- Use portable Node development launchers and the pinned CLI's local-only mode. Combined startup requires verified network PostgreSQL and refuses embedded storage/port 3000. Retain the plain local web mode for prototype review while accounts are pending.
+- Vercel Services remains beta; free plan/resource checks and the actual hosted agent gate still apply. See [setup](SETUP.md).
+
 ## D001 — Product direction
 
 - Date: 2026-10-18. Status: selected by user.

@@ -12,6 +12,8 @@
     "demo": "node scripts/demo.ts",
     "typecheck": "next typegen && tsc --noEmit",
     "dev:local": "node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/dev-local.ts",
+    "services:check": "node scripts/dev-service.ts --check",
+    "dev:services": "npm run services:check && npx --yes vercel@59.16.0 dev --local --listen 127.0.0.1:3017",
     "setup:local": "node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/setup-local.ts",
     "build": "next build",
     "start": "next start",

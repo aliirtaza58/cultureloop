@@ -37,6 +37,7 @@
     "app/**/*.ts",
     "app/**/*.tsx",
     "next.config.ts",
+    "vercel.ts",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
   ],
