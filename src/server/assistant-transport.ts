@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { authorizeAssistant, requireFreeAssistant } from "./assistant-access.ts";
+import { authorizeAssistant } from "./assistant-access.ts";
+import { requireFreeAssistant } from "./assistant-configuration.ts";
 import { body, privateJson } from "./application.ts";
 import { rateLimit } from "./limits.ts";
 import type { RoomStore, SqlPool } from "./store.ts";

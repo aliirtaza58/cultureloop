@@ -9,7 +9,8 @@ import type { RoomQloo } from "../src/server/room-operations.ts";
 import { rankingInputs } from "../src/server/qloo-service.ts";
 import { roomAssistantTools } from "../src/server/assistant-tools.ts";
 import { shortlistBook } from "../src/domain/exchanges.ts";
-import { assistantPrincipal, authorizeAssistant, requireFreeAssistant } from "../src/server/assistant-access.ts";
+import { assistantPrincipal, authorizeAssistant } from "../src/server/assistant-access.ts";
+import { requireFreeAssistant } from "../src/server/assistant-configuration.ts";
 import { sendAssistant, streamAssistant } from "../src/server/assistant-transport.ts";
 
 // Synthetic provider data and embedded PostgreSQL; no model or live Qloo requests.

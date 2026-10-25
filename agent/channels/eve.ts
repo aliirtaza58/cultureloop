@@ -1,4 +1,5 @@
-import { disableRoute } from "eve/channels";
+import { eveChannel } from "eve/channels/eve";
 
-// The standard protocol does not enforce conversation ownership. Use our room-bound channel.
-export default disableRoute();
+// Keep the public health probe; reject every standard session/control/stream request.
+// Conversation access belongs exclusively to the room-bound custom channel.
+export default eveChannel({ auth: () => null });

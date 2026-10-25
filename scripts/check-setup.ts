@@ -7,6 +7,7 @@ const result: Record<string, unknown> = {
   variables: Object.fromEntries(names.map(name => [name, present(name) ? "present (not validated)" : "missing"])),
   signingSecretLongEnough: (process.env.SESSION_SECRET?.length ?? 0) >= 32,
   hostedDatabaseOptIn: process.env.CULTURELOOP_HOSTED_DB_VERIFIED === "true",
+  freeModelOptIn: process.env.CULTURELOOP_FREE_AI_VERIFIED === "true",
   note: "Presence does not verify accounts, free plans, database connectivity, Qloo authentication or inference.",
 };
 if (gateway) {

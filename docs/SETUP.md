@@ -49,6 +49,7 @@ Gateway currently documents $5/month of included credit for a restricted model s
 2. Open **Connect**, select the intended development branch/database/role, and choose a pooled PostgreSQL connection. Save its connection string privately as `DATABASE_URL` in `.env.local`. Preserve its SSL parameters. [Connection instructions](https://neon.com/docs/get-started/connect-neon).
 3. Report only that the free database is ready and its non-secret project/branch name. The implementation session will verify the target, apply [the schema](../db/001_rooms.sql), and test transactions. Keep `CULTURELOOP_HOSTED_DB_VERIFIED=false` until this check. Entering a URL does not establish connectivity or schema installation.
 4. Local embedded PostgreSQL is available for tests and later local prototype development, using `CULTURELOOP_LOCAL_PROTOTYPE=true`. It stores data under ignored `.private/prototype-db`. Never enable embedded storage on Vercel; it is not hosted persistence.
+5. Run only one server process against this embedded directory at a time. The standalone eve runtime and web app were checked sequentially. Their combined service deployment requires the shared hosted PostgreSQL target; do not start both against the same local files.
 
 ## 4. Deploy and test after free account access is verified
 
@@ -58,4 +59,4 @@ Gateway currently documents $5/month of included credit for a restricted model s
 4. Provide the entrant a working prototype URL for extensive testing and feedback. Obtain explicit prototype approval before final hardening/submission work.
 5. Later, publish a stable public URL without Vercel-team login requirements and test judge access from a fresh browser. Devpost submission remains the entrant's action.
 
-Outstanding: entrant prototype review, broader separate-browser usability checks, free account/model verification, hosted migration/concurrency, real agent tools/hosted round trip, public release hardening and final submission preparation. Local HTTP/browser checks do not establish those hosted gates. Local examples and research rooms are fictional; no human usefulness or real physical exchange has been verified.
+Outstanding: entrant prototype review, broader separate-browser usability checks, free account/model verification, hosted migration/concurrency, mounting the custom agent channel and verifying a live tool turn, assistant UI integration, public release hardening and final submission preparation. The agent tools and protected transport have local service/HTTP checks in [assistant verification](ASSISTANT_VERIFICATION.md). Those checks do not establish hosted gates. Local examples and research rooms are fictional; no human usefulness or real physical exchange has been verified.

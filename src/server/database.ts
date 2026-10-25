@@ -14,7 +14,17 @@ async function initialize(): Promise<SqlPool> {
   if (process.env.CULTURELOOP_LOCAL_PROTOTYPE === "true") {
     if (process.env.VERCEL) throw new Error("Embedded prototype storage cannot run on the hosted service.");
     const { PGlite } = await import("@electric-sql/pglite");
-    const db = await PGlite.create(resolve(process.cwd(), ".private", "prototype-db"));
+    // Bundlers can relocate the library without copying its WASM/data assets.
+    // Embedded mode runs from an installed local workspace; resolve assets explicitly.
+    const assets = resolve(process.cwd(), "node_modules", "@electric-sql", "pglite", "dist");
+    const [bundle, wasm, initdb] = await Promise.all([
+      readFile(resolve(assets, "pglite.data")), readFile(resolve(assets, "pglite.wasm")), readFile(resolve(assets, "initdb.wasm")),
+    ]);
+    const db = await PGlite.create(resolve(process.cwd(), ".private", "prototype-db"), {
+      fsBundle: new Blob([Uint8Array.from(bundle)]),
+      pgliteWasmModule: await WebAssembly.compile(Uint8Array.from(wasm)),
+      initdbWasmModule: await WebAssembly.compile(Uint8Array.from(initdb)),
+    });
     await db.exec(await readFile(resolve(process.cwd(), "db", "001_rooms.sql"), "utf8"));
     // One embedded connection: keep whole transactions serialized, not individual statements.
     let tail = Promise.resolve();

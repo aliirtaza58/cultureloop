@@ -9,6 +9,14 @@ This log records product and architecture choices, their status, and rationale.
 - Button and assistant ranking/generation use the same operations. The model receives pseudonymous reader labels, evidence provenance and explicit unknowns; guest capabilities and aliases stay outside tool results.
 - Preserve eve and the existing four-hour free hosted gate. Service tests do not establish model execution or hosted access. Evidence: [assistant verification](ASSISTANT_VERIFICATION.md).
 
+## D016 — Agent runtime and conversation ownership
+
+- Date: 2026-10-23. Status: agent build and local fail-closed HTTP checks passed; free hosted round trip pending.
+- Use a custom eve channel with server-derived room/guest conversation addresses. Deny the standard session/control/stream API; preserve its health route. The model receives no guest capability and cannot select a conversation address.
+- Resolve the configured model at runtime with the free-access gate checked before each model step. Static builds need no model credentials; they do not verify inference.
+- Pin just-bash for an in-process sandbox and disable automatic installs/default model tools. Actual hosted Workflow and other resource quotas still require verification.
+- Keep embedded local PostgreSQL limited to one server process at a time. Integrated web/agent services require the verified free hosted database. No architecture fallback or timebox exemption is implied.
+
 ## D001 — Product direction
 
 - Date: 2026-10-18. Status: selected by user.

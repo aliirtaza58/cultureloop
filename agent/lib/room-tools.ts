@@ -1,6 +1,7 @@
 import { database } from "../../src/server/database.ts";
 import { RoomStore } from "../../src/server/store.ts";
-import { assistantPrincipal, requireFreeAssistant } from "../../src/server/assistant-access.ts";
+import { assistantPrincipal } from "../../src/server/assistant-access.ts";
+import { requireFreeAssistant } from "../../src/server/assistant-configuration.ts";
 import { roomAssistantTools } from "../../src/server/assistant-tools.ts";
 import type { AssistantToolName } from "../../src/server/assistant-tools.ts";
 import { QlooClient } from "../../src/integrations/qloo.ts";

@@ -1,12 +1,10 @@
-import { defineAgent } from "eve";
-
-const model = process.env.AI_GATEWAY_MODEL?.trim();
-if (!model) {
-  throw new Error("Set AI_GATEWAY_MODEL to an account-verified free-tier tool-capable model before running the agent.");
-}
+import { defineAgent, defineDynamic } from "eve";
+import { resolveAssistantModel } from "../src/server/assistant-configuration.ts";
 
 export default defineAgent({
-  model,
+  model: defineDynamic({ events: {
+    "step.started": () => resolveAssistantModel(),
+  } }),
   defaultTools: false,
   limits: {
     maxInputTokensPerSession: 10_000,

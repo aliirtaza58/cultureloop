@@ -20,11 +20,3 @@ export function assistantPrincipal(current: unknown) {
   if (!parsed.success) throw new Error("Room membership required.");
   return parsed.data;
 }
-export function requireFreeAssistant(): void {
-  if (process.env.CULTURELOOP_FREE_AI_VERIFIED !== "true") {
-    throw new Error("Prototype assistant is waiting for verified free model access.");
-  }
-  if (!process.env.AI_GATEWAY_MODEL?.trim() || !(process.env.AI_GATEWAY_API_KEY?.trim() || process.env.VERCEL_OIDC_TOKEN?.trim())) {
-    throw new Error("Prototype assistant model access is not configured.");
-  }
-}
