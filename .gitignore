@@ -55,6 +55,8 @@ coverage/
 __pycache__/
 *.pyc
 *.tsbuildinfo
+supabase/.temp/
+supabase/.branches/
 
 # Retain the user's original skill archive locally.
 ui-ux-pro-max-skill-main.zip

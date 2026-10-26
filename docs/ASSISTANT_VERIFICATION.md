@@ -1,6 +1,10 @@
 # Assistant implementation checks
 
-Updated October 26, 2026. Application services have synthetic-provider/embedded-SQL checks. A direct Google model/tool protocol check now passes; hosted eve workflow and shared persistence remain unverified.
+Updated October 27, 2026. Local Google/eve checks and hosted PostgreSQL schema/transaction checks pass. The combined/hosted eve turn remains unverified.
+
+The dedicated Supabase target passed certificate/hostname verification and live login. Its versioned migration installed five application tables with RLS and zero grants to anon/authenticated/service_role. Offline migration tests check browser denial, preservation of an unrelated table, owner persistence after repeat application, and atomic rollback on failure. The current Supabase CLI rejected the initial multi-statement batch before execution; the tested single DO block then applied successfully. The Supabase connector lacks access to this project, so the authenticated database CLI was used with the saved credentials.
+
+Live hosted SQL verification passed create/join persistence, private membership checks, concurrent approval retries, unique holds and revision/hold rollback. These were explicitly synthetic ownership/shortlist decisions, with no Qloo/model calls or participant research. Only the verifier's newly created room was deleted afterward. The application database opt-in was enabled after these checks. This does not establish hosted model/runtime behavior or general load capacity.
 
 Direct Google integration: 82 project tests and TypeScript passed. The adapter is pinned to the existing AI SDK's provider version. Tests verify credential separation, free/model gates, direct Google routing, header-only key handling, the 512-token request cap and no alternate-provider request on a quota error. The existing room authorization tests remain passing.
 
@@ -8,7 +12,7 @@ One bounded live `model:verify -- --live` check against the configured free Gemi
 
 The newly built eve server also accepted an authenticated local room message (HTTP200) and streamed a completed turn (HTTP200, 18 events), using embedded PostgreSQL and the real Google model. Its read_room tool succeeded and returned the actual test-room counts: one reader and zero books. The two steps reported 1,800 input and 95 output tokens. The first probe attached before the conversation address was registered; a bounded wait resolved the startup race. This is local runtime evidence, not the shared/hosted gate. The temporary server was stopped.
 
-Supabase's CA fixed certificate-chain verification. Login still returned PostgreSQL `28P01`; no schema/data operation was performed. The entrant deferred further login attempts until the next session. The hosted database gate remains disabled.
+The initial certificate-chain and password setup issues were resolved before hosted schema verification. Credentials, the CA file and private reports remain excluded from Git.
 
 Hosted connection configuration now supplies explicit certificate/hostname verification and a local-file or inline CA. It removes accepted URL `sslmode` options before pg can replace the explicit policy, rejects weaker/competing TLS settings, retains the three-connection pool and requires the verified target flag. All 86 tests, TypeScript, web and eve builds passed. Offline tests exercise these guards without connecting to Supabase. These checks do not establish hosted schema, private grants/RLS or transaction behavior.
 
@@ -28,4 +32,4 @@ On October 25 the web production server separately passed the example-room HTTP 
 
 The `vercel.ts` service graph now routes the custom channel explicitly alongside the existing web app. All 78 project tests and TypeScript passed. Routing tests evaluate the actual eve helper output; they check custom endpoints, preservation of web room APIs, embedded/unverified database rejection and service ports/origins. Running `services:check` with the current missing database correctly stopped before service startup. These are static configuration and launcher checks, not a running combined deployment.
 
-Pending: run the combined services with verified shared PostgreSQL, verify account-eligible free model execution and hosted persistence, then run a browser-to-agent tool round trip. The entrant is configuring Hobby, AI Gateway and a free PostgreSQL target. The chat UI stays deferred until real free inference works, following the reviewed prototype design. No missing gate is represented by a synthetic test pass.
+Pending: run combined services and a public hosted eve tool round trip using the verified shared database and Google Free model. Hobby and Supabase Free are entrant-confirmed; the hosting project is created and linked. Assistant UI and entrant prototype review follow the runtime gate. No missing gate is represented by a synthetic test pass.

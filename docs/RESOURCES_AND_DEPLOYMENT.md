@@ -1,6 +1,6 @@
 # CultureLoop resources, data, and deployment
 
-Updated 2026-10-26. Budget: **free tiers only**. The entrant configured Google/Supabase and confirmed Vercel/Google Free tiers. Google model/tool protocol passed; hosted database login and shared eve execution remain pending. Follow [setup](SETUP.md) and [assistant verification](ASSISTANT_VERIFICATION.md) for observed results and remaining gates.
+Updated 2026-10-27. Budget: **free tiers only**. Google model/local eve and hosted Supabase schema/transaction checks pass. The entrant confirmed all three Free/Hobby plans; the Vercel project is created and linked. Shared/hosted eve execution remains pending. Follow [setup](SETUP.md) and [assistant verification](ASSISTANT_VERIFICATION.md).
 
 ## Resources to prepare
 
@@ -9,7 +9,7 @@ Updated 2026-10-26. Budget: **free tiers only**. The entrant configured Google/S
 | Qloo event access | Entity identities and cultural evidence | Key issued; live search/catalog ranking verified privately |
 | GitHub account/repository | Public source, issues, version history | [Source repository](https://github.com/aliirtaza58/cultureloop); initial source pushed October 18 |
 | Vercel Hobby account/project | Public HTTPS web app and agent runtime | Entrant confirmed Hobby target; runtime/deployment allowances still need checking |
-| Supabase Free PostgreSQL | Persistent rooms, listings, approvals, private caches | Entrant configured a dedicated target; TLS CA resolved, login verification pending |
+| Supabase Free PostgreSQL | Persistent rooms, listings, approvals, private caches | TLS/login, five RLS-protected tables, zero browser grants and transaction/rollback checks passed |
 | Google AI Studio Free | Model inference for one bounded tool-calling agent | Entrant confirmed Free; model-list and live tool protocol passed; quota is finite |
 | Devpost entry | Official submission and judge instructions | Entrant-owned; final submission remains an entrant action |
 | Local Node/npm/Git | Development and verification | Verified locally; dependency versions pinned |

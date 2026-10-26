@@ -22,6 +22,8 @@
     "qloo:verify": "node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/verify-qloo.ts",
     "setup:check": "node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/check-setup.ts",
     "model:verify": "node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/verify-model.ts",
+    "db:setup": "node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/setup-database.ts",
+    "db:verify": "node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/verify-database.ts",
     "agent:dev": "eve dev",
     "agent:build": "eve build"
   },
