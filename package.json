@@ -21,10 +21,12 @@
     "qloo:probe": "node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/probe-qloo.ts",
     "qloo:verify": "node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/verify-qloo.ts",
     "setup:check": "node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/check-setup.ts",
+    "model:verify": "node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/verify-model.ts",
     "agent:dev": "eve dev",
     "agent:build": "eve build"
   },
   "dependencies": {
+    "@ai-sdk/google": "4.0.93",
     "@electric-sql/pglite": "0.5.10",
     "ai": "7.0.137",
     "eve": "0.80.1",

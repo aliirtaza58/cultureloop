@@ -1,6 +1,14 @@
 # Assistant implementation checks
 
-Updated October 25, 2026. These checks verify application services with synthetic provider fixtures and embedded PostgreSQL. They do not verify a live model, hosted eve workflow or deployment.
+Updated October 26, 2026. Application services have synthetic-provider/embedded-SQL checks. A direct Google model/tool protocol check now passes; hosted eve workflow and shared persistence remain unverified.
+
+Direct Google integration: 82 project tests and TypeScript passed. The adapter is pinned to the existing AI SDK's provider version. Tests verify credential separation, free/model gates, direct Google routing, header-only key handling, the 512-token request cap and no alternate-provider request on a quota error. The existing room authorization tests remain passing.
+
+One bounded live `model:verify -- --live` check against the configured free Gemini model passed: one synthetic calculator tool execution, two model steps, 226 input tokens and 19 output tokens. It used no participant/Qloo data and made no database request. Google model listing also returned HTTP200. This establishes model/tool protocol, not an eve room turn or public deployment.
+
+The newly built eve server also accepted an authenticated local room message (HTTP200) and streamed a completed turn (HTTP200, 18 events), using embedded PostgreSQL and the real Google model. The first probe tried to attach before the conversation address was registered; a bounded wait resolved the startup race. This is local runtime evidence, not the required shared/hosted round trip. The temporary server was stopped after the check.
+
+Supabase's CA fixed certificate-chain verification. Login still returned PostgreSQL `28P01`; no schema/data operation was performed. The entrant deferred further login attempts until the next session. The hosted database gate remains disabled.
 
 The assistant tool boundary supports reading the current room, resolving identity candidates, ranking available books, finding exchanges and explaining an exact proposal revision. Room authority is supplied by the server; schemas reject room/member overrides. Shortlisting, approvals, declines, withdrawals and completion are participant controls, outside this tool set.
 

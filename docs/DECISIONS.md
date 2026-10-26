@@ -2,6 +2,14 @@
 
 This log records product and architecture choices, their status, and rationale.
 
+## D018 — Reuse free Google and PostgreSQL accounts
+
+- Date: 2026-10-26. Status: entrant configured accounts; direct Google model/tool protocol verified, shared hosted runtime pending.
+- Supersedes D005's proposed Neon/Gateway defaults: use direct Google AI Studio for inference and the entrant's dedicated Supabase PostgreSQL target for state. Preserve the existing web app, eve runtime, SQL services and matching contract. No MongoDB rewrite or Supabase Auth migration.
+- Explicit provider selection, a verified Google model allowlist, per-call output cap and existing session gates bound inference. No automatic provider or paid-model fallback. Pin the Google adapter to the installed AI SDK/provider versions.
+- Google Free content processing is a documented tradeoff: send only existing pseudonymous tool context, without personal identifiers/secrets. Free status is entrant-reported; actual key and tool requests are separately observed.
+- Database setup must verify TLS with the project's CA, private table access and transactions before enabling the hosted flag. Existing unrelated projects remain untouched. The four-hour hosted eve gate and prototype approval requirement remain unchanged.
+
 ## D015 — Shared assistant operations
 
 - Date: 2026-10-23. Status: application services tested; live runtime pending.

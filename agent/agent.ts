@@ -1,9 +1,9 @@
 import { defineAgent, defineDynamic } from "eve";
-import { resolveAssistantModel } from "../src/server/assistant-configuration.ts";
+import { resolveAgentModel } from "./lib/model.ts";
 
 export default defineAgent({
   model: defineDynamic({ events: {
-    "step.started": () => resolveAssistantModel(),
+    "step.started": () => resolveAgentModel(),
   } }),
   defaultTools: false,
   limits: {

@@ -48,13 +48,13 @@ Desktop can use an exchange ring plus evidence panel. Mobile uses an ordered tra
 
 ## Technical architecture
 
-Default implementation: TypeScript, Next.js for the web application, eve for one tool-calling agent, and SQL storage for room and exchange state. Use AI Gateway for the model, with its model ID and access configured at implementation time. Pin installed versions and read their shipped documentation before writing integration code.
+Default implementation: TypeScript, Next.js for the web application, eve for one tool-calling agent, and SQL storage for room and exchange state. Use direct Google AI Studio access to the verified free Gemini model; Gateway remains an explicit alternative with no automatic fallback. Pin compatible SDK/provider versions and read their shipped documentation before changing integration code.
 
 Timebox eve's free hosted round trip to four focused implementation hours. If access or complexity prevents success, use one bounded AI SDK agent inside Next.js, retaining shared domain services. Record focused time and the actual failure before switching. Missing free inference blocks either framework; fallback does not solve model access.
 
 The eve frontend documentation describes a Next.js integration. Verify one browser-to-agent round trip and public guest access in an early deployment before expanding the interface. Public entry must not require a judge to join the entrant's hosting team.
 
-The proposed zero-dollar deployment is Vercel Hobby plus Neon Free Postgres and AI Gateway's free eligible-model tier, subject to checking actual account/runtime access and remaining quotas. See [RESOURCES_AND_DEPLOYMENT.md](RESOURCES_AND_DEPLOYMENT.md). No paid infrastructure, credit purchases, trials that become paid, or automatic upgrades are allowed. Keep matching logic independent of the database adapter.
+The selected zero-dollar setup is Vercel Hobby, Supabase Free PostgreSQL and direct Google AI Studio free model access, subject to actual account/runtime verification. Neon/Gateway remain alternatives. See [RESOURCES_AND_DEPLOYMENT.md](RESOURCES_AND_DEPLOYMENT.md). No paid infrastructure, purchases, paid trials or automatic upgrades are allowed. Keep matching logic independent of the database adapter.
 
 | Layer | Responsibility |
 | --- | --- |

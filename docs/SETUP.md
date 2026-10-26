@@ -1,6 +1,6 @@
 # Prototype setup
 
-Updated October 22, 2026. Free tiers only. The local UI is available; no hosted deployment or live model turn is verified. To review the local example without account provisioning, run `npm ci`, `npm run setup:local`, then `npm run dev:local` and open http://127.0.0.1:3017. Setup generates/preserves the session secret without displaying it. See [the README](../README.md) for the review flow.
+Updated October 26, 2026. Free tiers only. The local UI and direct Google model/tool protocol are verified; the combined hosted room assistant is pending. To review the local example without account provisioning, run `npm ci`, `npm run setup:local`, then `npm run dev:local` and open http://127.0.0.1:3017. Setup preserves the session secret privately. See [the README](../README.md) for the review flow.
 
 ## What each service does
 
@@ -8,8 +8,9 @@ Updated October 22, 2026. Free tiers only. The local UI is available; no hosted 
 | --- | --- |
 | Qloo / `QLOO_API_KEY` | Resolves cultural identities and ranks room books; already live-tested |
 | Vercel Hobby workspace | Owns the future hosted web project; a workspace name does not establish its plan |
-| AI Gateway / `AI_GATEWAY_API_KEY` | Authenticates the assistant's model requests; separate from Qloo and Vercel account tokens |
-| `AI_GATEWAY_MODEL` | Exact model ID, eligible for free credit and capable of tool calling |
+| Google AI Studio / `GOOGLE_GENERATIVE_AI_API_KEY` | Direct Gemini model access; separate from Qloo and hosting |
+| `CULTURELOOP_MODEL_PROVIDER` / `GOOGLE_MODEL` | Explicit provider and verified free model selection |
+| AI Gateway / `AI_GATEWAY_API_KEY`, `AI_GATEWAY_MODEL` | Optional explicit alternative; no automatic provider fallback |
 | PostgreSQL / `DATABASE_URL` | Persists private rooms, decisions, holds and Qloo cache |
 | `SESSION_SECRET` | Signs temporary selections of server-resolved identities; setup:local generates/preserves it privately |
 | `CULTURELOOP_APP_ORIGIN` | Exact public origin used for request validation; dev:local supplies http://127.0.0.1:3017 |
@@ -27,21 +28,20 @@ There is no additional “Qloo agent key.” The assistant will call shared appl
 
 ## 2. Configure the model separately
 
-1. In the confirmed workspace, open **AI Gateway**. Check its Credits/Billing area: use included free credit only, with auto top-up disabled. Do not purchase credits or upgrade. If free access requires a purchase or is unavailable, record the blocker and use a different verified free route.
-2. Open AI Gateway → **API Keys** → **Create key**. Name it `cultureloop-prototype`. Copy it directly into `AI_GATEWAY_API_KEY` in your ignored `.env.local`. This must be a Gateway key, not the Qloo key or a general Vercel access token. [Official key instructions](https://vercel.com/docs/ai-gateway/authentication-and-byok/api-keys).
-3. Browse the [Free Tier model catalog](https://vercel.com/ai-gateway/models?freeTier=true). Choose a text model with tool calling and copy its exact `provider/model` ID into `AI_GATEWAY_MODEL`. The unrestricted catalog alone does not prove free eligibility. If uncertain, configure the key first and let the implementation session verify/select the model from the current eligible list.
-4. Save `.env.local`. Preserve the existing Qloo key and session secret. Do not copy the blank template over your environment files.
-5. From the repository, run:
+1. Open [Google AI Studio](https://aistudio.google.com/api-keys), select the intended Free project and save its key as `GOOGLE_GENERATIVE_AI_API_KEY` in ignored `.env.local`. Do not enable paid billing. Check actual quota in AI Studio; a valid key alone does not establish it.
+2. Set `CULTURELOOP_MODEL_PROVIDER=google` and `GOOGLE_MODEL` to the verified `googlePrototypeModel` in [configuration](../src/server/assistant-configuration.ts). The prototype rejects other Google model IDs. Check [Google pricing](https://ai.google.dev/gemini-api/docs/pricing) and [model capabilities](https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash-lite) before changing it. Free-tier request content may be used for product improvement; keep model context pseudonymous.
+3. Preserve existing Qloo/session settings. Keep `CULTURELOOP_FREE_AI_VERIFIED=false` until the intended account's Free status, credentials and model eligibility have been checked. The flag itself is not evidence.
+4. Run read-only metadata diagnostics:
 
    ```powershell
    npm run setup:check
-   npm run setup:check -- --gateway
+   npm run setup:check -- --google
    ```
 
-   The second command only reads the public model catalog and authenticated credit endpoint. Expected metadata checks: `configuredModelInCatalog: true`, `gatewayCreditsHttp: 200`. A 401 means the key is invalid or inaccessible; create/check a key in the correct workspace. Diagnostics never print keys or provider response bodies.
-6. Confirm the workspace slug and that free credit is available/top-ups are off. The implementation session must still verify account eligibility and one bounded real tool-calling turn. HTTP 200/catalog membership alone do not pass that gate. Keep `CULTURELOOP_FREE_AI_VERIFIED=false` until free eligibility, credentials and disabled top-ups have been checked; setting the flag is not evidence of verification.
+   Expected: `googleModelsHttp: 200`, `configuredGoogleModelInCatalog: true`, `googleGenerationSupported: true`. No inference/database call occurs; diagnostics print no credentials or provider bodies.
+5. After free account verification, enable the model gate and run `npm run model:verify -- --live`. It performs at most two model steps, one synthetic calculator tool execution, 256 output tokens per step and no automatic retry. This verifies live model/tool protocol, not hosted room authorization or database persistence. The direct application model caps each request at 512 output tokens in addition to existing session limits.
 
-Gateway currently documents $5/month of included credit for a restricted model subset. This is a metered allowance, not unlimited free inference. [Pricing and free eligibility](https://vercel.com/docs/ai-gateway/pricing).
+Gateway remains available only through explicit `CULTURELOOP_MODEL_PROVIDER=gateway` with its own verified `AI_GATEWAY_MODEL` and Gateway key/OIDC. `npm run setup:check -- --gateway` reads its catalog/credits without inference. Google errors never switch providers automatically. Gateway has a finite restricted-model free allowance; no purchases/top-ups are authorized. [Gateway pricing](https://vercel.com/docs/ai-gateway/pricing).
 
 ## 3. Prepare hosted persistence
 

@@ -1,6 +1,6 @@
 # CultureLoop resources, data, and deployment
 
-Updated 2026-10-21. Budget: **free tiers only**, explicitly selected by the user. No hosted resources have been created or free account quotas verified. Follow [the setup guide](SETUP.md) for account/model/database steps and [backend verification](PROTOTYPE_BACKEND_VERIFICATION.md) for observed results.
+Updated 2026-10-26. Budget: **free tiers only**. The entrant configured Google/Supabase and confirmed Vercel/Google Free tiers. Google model/tool protocol passed; hosted database login and shared eve execution remain pending. Follow [setup](SETUP.md) and [assistant verification](ASSISTANT_VERIFICATION.md) for observed results and remaining gates.
 
 ## Resources to prepare
 
@@ -8,9 +8,9 @@ Updated 2026-10-21. Budget: **free tiers only**, explicitly selected by the user
 | --- | --- | --- |
 | Qloo event access | Entity identities and cultural evidence | Key issued; live search/catalog ranking verified privately |
 | GitHub account/repository | Public source, issues, version history | [Source repository](https://github.com/aliirtaza58/cultureloop); initial source pushed October 18 |
-| Vercel Hobby account/project | Public HTTPS web app and agent runtime | Proposed; verify Hobby eligibility and actual service allowances |
-| Neon Free Postgres | Persistent rooms, listings, approvals, private caches | Proposed; provision only a free resource |
-| AI Gateway free-tier access | Model inference for one bounded tool-calling agent | Credentials/model currently unset locally; verify credit, eligible tools, limits and authentication |
+| Vercel Hobby account/project | Public HTTPS web app and agent runtime | Entrant confirmed Hobby target; runtime/deployment allowances still need checking |
+| Supabase Free PostgreSQL | Persistent rooms, listings, approvals, private caches | Entrant configured a dedicated target; TLS CA resolved, login verification pending |
+| Google AI Studio Free | Model inference for one bounded tool-calling agent | Entrant confirmed Free; model-list and live tool protocol passed; quota is finite |
 | Devpost entry | Official submission and judge instructions | Entrant-owned; final submission remains an entrant action |
 | Local Node/npm/Git | Development and verification | Verified locally; dependency versions pinned |
 | A small consenting test group | Evidence about usefulness and usability | Aim for 5-8 exploratory testers; no recruitment messages authorized |
@@ -19,9 +19,9 @@ Built-in tooling can handle source and deployment work after target/account acce
 
 Vercel lists a $0 Hobby plan. Its use and quotas must fit the entrant's account and plan conditions. [Pricing](https://vercel.com/pricing), [Hobby limits](https://vercel.com/docs/plans/hobby).
 
-Neon lists a Free plan with a per-project database allowance and connection pooling. Start there; verify actual selected region, storage, and compute quotas at provisioning. [Neon pricing](https://neon.com/pricing).
+Supabase supplies PostgreSQL compatible with the existing SQL store. Use the dedicated prototype project, verified TLS and a transaction pooler; keep its Data API disabled and inspect grants/RLS before private data is loaded. Free projects have finite storage/connection allowances and can pause after inactivity. Actual account quota and judging availability remain checks. [Supabase pricing](https://supabase.com/pricing), [connections](https://supabase.com/docs/guides/database/connecting-to-postgres). Neon remains an alternative, not an additional required service.
 
-AI Gateway currently lists $5/month of free model credit, a restricted eligible-model catalog, and lower rate limits. Purchasing credits switches the account to paid; do not purchase or enable top-ups. Existing account state still needs checking. [AI Gateway pricing](https://vercel.com/docs/ai-gateway/pricing).
+Google calls go directly to the selected Gemini Developer API Free model. Verify the current model's eligibility, function calling and the entrant's actual quota. Free-tier request content may be used for product improvement, so preserve pseudonymous tool context. [Google pricing](https://ai.google.dev/gemini-api/docs/pricing), [rate limits](https://ai.google.dev/gemini-api/docs/rate-limits). Gateway remains an explicit alternative with its own finite free allowance; no automatic provider fallback or credit purchase.
 
 ## Where the data comes from
 
@@ -50,8 +50,8 @@ Open Library is optional metadata enrichment, not cultural evidence. Its APIs re
 flowchart LR
   J[Judge browser] --> W[Vercel: web routes and one eve agent]
   W --> Q[Qloo event API]
-  W --> M[AI Gateway: eligible model]
-  W --> D[Neon Free: rooms, inventory, decisions, private cache]
+  W --> M[Google AI Studio: verified Free model]
+  W --> D[Supabase Free PostgreSQL: private application state]
 ```
 
 Use the free provider-assigned HTTPS domain. No custom domain, VM, Docker server, GPU, paid analytics service, email provider, or external authentication subscription is required by the product plan.
@@ -66,7 +66,7 @@ Application persistence belongs in Postgres. Hobby Workflow retention after run 
 
 1. Verify intended Vercel identity/project target. The GitHub repository already exists with an MIT license; preserve its history.
 2. Verify free-only plan eligibility and resource quotas. Select an actually free-tier-eligible model supporting the required tools; do not accept a scaffold default blindly.
-3. Scaffold and pin packages. Link the intended Vercel project before pulling environment values or running shared database setup. Prefer a genuinely free Neon integration; inspect plan and resource before provisioning.
+3. Preserve the existing app and pinned packages. Link the intended Vercel project before pulling environment values. Verify the dedicated Supabase target, Free plan, TLS and API isolation before schema/data operations; do not provision another service unnecessarily.
 4. Configure server secrets in the host and local ignored environment. The committed .env.example is a proposed variable contract, not proof of a working integration. Check names/presence without printing values. Preserve local values before any environment-file replacement.
 5. Run migrations against the intended development database, seed only labeled examples, and verify one browser-to-agent request. Keep preview and production data logically isolated; create a separate free branch/database if quota permits.
 6. Deploy an early preview. Test health, model auth, Qloo auth, database persistence, guest membership, and streaming from the actual host. Do not postpone this integration test until final polish.
@@ -74,7 +74,7 @@ Application persistence belongs in Postgres. Hobby Workflow retention after run 
 8. From a fresh browser, complete create/join, books/interests, proposal, evidence, decline/withdrawal, repair, accept, reload, and export. Record URL, revision, actual commands/results, and known limitations in release verification evidence.
 9. Submit the production URL and public source on Devpost. Keep normal public judging access working throughout judging; check provider usage manually and leave headroom. No recurring automation has been requested or created.
 
-Production model authentication can use Vercel project OIDC on the planned Gateway path; local development can use an ignored Gateway key or linked development OIDC. Credentials do not imply a paid allowance. [eve authentication/deployment](https://github.com/vercel/eve/blob/main/docs/guides/deployment/vercel.mdx).
+Direct Google authentication uses its server-only key in local ignored configuration and host secret settings. Project OIDC is available for an explicitly selected Gateway alternative. Credentials do not establish quota or a paid allowance. [eve authentication/deployment](https://github.com/vercel/eve/blob/main/docs/guides/deployment/vercel.mdx).
 
 ## Scaling within a zero-dollar budget
 
