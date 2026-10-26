@@ -151,6 +151,22 @@ summary { min-height: 44px; padding-block: var(--space-sm); text-decoration: und
 .skip-link { position: absolute; top: -100px; left: var(--space-md); background: var(--color-surface); padding: var(--space-md); }
 .skip-link:focus { top: var(--space-sm); z-index: var(--z-raised); }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); border: 0; white-space: nowrap; }
+.room-assistant { margin-top: var(--space-xl); border-top: var(--rule-thin) solid var(--color-rule); border-bottom: var(--rule-thin) solid var(--color-rule); }
+.room-assistant > summary { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-sm) var(--space-lg); min-height: 76px; padding-block: var(--space-md); list-style: none; }
+.room-assistant > summary::-webkit-details-marker { display: none; }
+.room-assistant > summary::after { content: "+"; font-size: var(--text-md); color: var(--color-accent); }
+.room-assistant[open] > summary::after { content: "−"; }
+.assistant-title { font: 700 var(--text-md)/1.2 var(--font-display); }
+.assistant-content { padding-block: var(--space-sm) var(--space-lg); }
+.assistant-prompts { display: flex; flex-wrap: wrap; gap: var(--space-sm); margin-block: var(--space-md); }
+.assistant-prompts .button { white-space: normal; text-align: left; justify-content: flex-start; border-color: var(--color-rule); }
+.room-assistant textarea { display: block; width: 100%; min-width: 0; min-height: 110px; resize: vertical; padding: var(--space-sm) var(--space-md); background: var(--color-surface); border: var(--rule-thin) solid var(--color-control); border-radius: var(--radius-sm); }
+.room-assistant textarea:focus-visible { outline: 3px solid var(--color-focus); outline-offset: 4px; }
+.assistant-status { min-height: 1.5em; margin-block: var(--space-md); }
+.assistant-reply { padding: var(--space-lg); background: var(--color-paper-deep); border-left: 2px solid var(--color-accent); }
+.assistant-reply p, .assistant-reply h3 { overflow-wrap: anywhere; }
+.assistant-question { font-weight: 600; }
+.assistant-answer { white-space: pre-wrap; }
 @media (max-width: 1000px) { .home-grid { gap: var(--space-xl); } .entry-panel { padding: var(--space-lg); } .room-layout { grid-template-columns: 190px minmax(0, 1fr); gap: var(--space-lg); } .section-head { flex-wrap: wrap; } }
 @media (max-width: 780px) {
   .home-grid { grid-template-columns: minmax(0, 1fr); padding-top: var(--space-xl); }

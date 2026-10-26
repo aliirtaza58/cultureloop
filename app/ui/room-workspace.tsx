@@ -6,6 +6,7 @@ import { requestJson } from "./api.ts";
 import { EntityPicker } from "./entity-picker.tsx";
 import { Evidence } from "./evidence.tsx";
 import { CycleView } from "./cycle-view.tsx";
+import { RoomAssistant } from "./room-assistant.tsx";
 
 type Stage = "books" | "taste" | "shortlist" | "swaps";
 const stages: { id: Stage; label: string }[] = [{ id: "books", label: "The bookshelf" },
@@ -15,7 +16,9 @@ export function RoomWorkspace({ id }: { id: string }) {
   const [view, setView] = useState<RoomView | null>(null);
   const [stage, setStage] = useState<Stage>("books");
   const [previewMember, setPreviewMember] = useState("");
-  const [busy, setBusy] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [assistantBusy, setAssistantBusy] = useState(false);
+  const busy = saving || assistantBusy;
   const [error, setError] = useState("");
   const [inviteLink, setInviteLink] = useState("");
   const [copied, setCopied] = useState(false);
@@ -39,14 +42,14 @@ export function RoomWorkspace({ id }: { id: string }) {
   const memberId = canSimulate && previewMember ? previewMember : view?.actor.memberId ?? "";
   async function run(command: Record<string, unknown>): Promise<boolean> {
     if (busy) return false;
-    setBusy(true); setError("");
+    setSaving(true); setError("");
     try {
       const result = await requestJson<{ view: RoomView }>(`/api/rooms/${id}/actions`, {
         method: "POST", body: JSON.stringify({ command, ...(canSimulate ? { simulateMember: memberId } : {}) }),
       });
       setView(result.view); return true;
     } catch (cause) { setError(cause instanceof Error ? cause.message : "The change could not be saved. Refresh and try again."); return false; }
-    finally { setBusy(false); }
+    finally { setSaving(false); }
   }
   async function copyInvite() {
     try { await navigator.clipboard.writeText(inviteLink); setCopied(true); }
@@ -76,8 +79,8 @@ export function RoomWorkspace({ id }: { id: string }) {
         {inviteLink && !example && <div className="invite-box"><button className="button small full" onClick={() => void copyInvite()}>{copied ? "Invitation copied" : "Copy invitation"}</button><details><summary>Show invitation link</summary><label htmlFor="share-link">Share with your circle</label><input id="share-link" readOnly value={inviteLink} onFocus={e => e.target.select()}/></details></div>}
         {example && <p className="caption">Explore the example, then <a href="/#start">start a real room</a> with your friends.</p>}
       </aside>
-      <section className="workspace" aria-busy={busy}>
-        <div className="request-status" role="status" aria-live="polite">{busy ? "Saving your change…" : "Room saved · refresh to see changes from other readers"}</div>
+      <section className="workspace" aria-busy={saving}>
+        <div className="request-status" role="status" aria-live="polite">{saving ? "Saving your change…" : assistantBusy ? "The assistant is checking your circle…" : "Room saved · refresh to see changes from other readers"}</div>
         {error && <p className="error-message" role="alert">{error}</p>}
         {stage === "books" && <>
           <div className="section-head"><div><h2>A bookshelf between friends.</h2><p>Every listing is a physical copy, offered by the reader named below.</p></div><span className="caption">{room.listings.filter(l => l.available).length} available</span></div>
@@ -108,6 +111,8 @@ export function RoomWorkspace({ id }: { id: string }) {
           {pastCycles.length > 0 && <details className="exchange-history"><summary>Previous exchanges ({pastCycles.length})</summary><p>Changed exchanges keep their old decisions for reference. Those decisions do not approve new transfers.</p>{pastCycles.map(record => <CycleView key={`${record.cycle.id}:${record.revision}`} record={record} room={room} members={members} memberId={memberId} busy={busy} onAction={run}/>)}</details>}
           {canSimulate && <p className="caption">Use “Simulate a reader” to review and approve separately as each fictional participant.</p>}
         </>}
+        <RoomAssistant key={id} roomId={id} example={example} disabled={saving || memberId !== view.actor.memberId}
+          onBusyChange={setAssistantBusy} onRefresh={load}/>
       </section>
     </div>
   </>;

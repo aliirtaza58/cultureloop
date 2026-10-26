@@ -18,7 +18,7 @@ Open **http://127.0.0.1:3017**. The setup command preserves an existing valid se
 
 The example needs no Qloo/model key. Try the example, open **Your shortlist**, load the explicitly labeled example choices, then open **The exchange** and find exchanges. Simulate each fictional reader separately to approve; withdraw a copy and update exchanges to explore repair. Approved exchanges can be downloaded as a text agreement or printed. Completion requires a separate explicit confirmation.
 
-For live rooms, configure your Qloo key privately, create a room, share its invitation and join from separate browser profiles. Resolve/confirm offered books and favorites, request Qloo suggestions, then shortlist acceptable books. No LLM is required for these deterministic exchange controls; the planned assistant remains a separate gate. Check edition/condition and arrange handoffs directly with your group.
+For live rooms, configure your Qloo key privately, create a room, share its invitation and join from separate browser profiles. Resolve/confirm offered books and favorites, request Qloo suggestions, then shortlist acceptable books. No LLM is required for these deterministic exchange controls. The optional assistant needs the separately configured Google/eve service graph described in [setup](docs/SETUP.md); plain local web mode does not start that service. Check edition/condition and arrange handoffs directly with your group.
 
 ## Verify
 
@@ -30,7 +30,7 @@ npm run setup:check
 npm run build
 ```
 
-The command-line demo and public fixtures are independently authored **synthetic** examples. They make no live Qloo or model calls, change no real inventory and record no real participant approvals. Tests cover matching, embedded PostgreSQL transactions, membership isolation, holds, repair, caching, agreement export and request safeguards. Local HTTP/browser checks and restart persistence have passed; hosted concurrency remains unverified.
+The command-line demo and public fixtures are independently authored **synthetic** examples. They make no live Qloo or model calls, change no real inventory and record no real participant approvals. Tests cover matching, PostgreSQL transactions, membership isolation, holds, repair, caching, agreement export and request safeguards. Local HTTP/browser checks and restart persistence have passed. Bounded hosted SQL tests also passed concurrent approval retries and unique holds; general load capacity remains unmeasured.
 
 With the local server running, `npm run verify:local` checks fictional workflows and access safeguards. `npm run verify:local -- --qloo` additionally uses a bounded two-title research scenario and at most three new Qloo calls (two searches and one rank request); private cache reuse reduces this. Identity ambiguity stops the check for private review. These are fictional inventory/decisions, not participant research. `--resume` verifies the saved agreement after restarting the local server. Do not treat localhost checks as hosted release verification.
 
@@ -38,11 +38,11 @@ The solver separates titles from physical copies and prioritizes members served,
 
 ## Current prototype status
 
-The local web prototype provides the bookshelf, confirmed cultural favorites, evidence-aware shortlists, exchange review, approvals, withdrawal/repair, completion and agreement download. Qloo-backed HTTP research checks passed using live responses/private cache, with fictional ownership and decisions. Browser example approvals and download passed. Missing Qloo results remain unknown. There is **no hosted application yet**.
+The web prototype provides the bookshelf, confirmed cultural favorites, evidence-aware shortlists, exchange review, approvals, withdrawal/repair, completion and agreement download. Qloo-backed HTTP checks passed using live responses/private cache, with fictional ownership and decisions. Browser example approvals and download passed. Missing Qloo results remain unknown.
 
-The eve 0.80.1 scaffold has no default model. The intended free hosting account, model authentication/eligibility, hosted database and a real hosted agent tool turn must be verified before release. Retain eve only if the four-hour hosted feasibility checkpoint succeeds; otherwise use the bounded AI SDK fallback described in the plan.
+A protected Vercel Preview now runs Next.js and eve with shared Supabase PostgreSQL and direct Google inference. Hosted creation/joining, saved-room reload, guest isolation, a real `read_room` tool result and completed eve workflow passed. The free hosted feasibility checkpoint succeeded, so eve is retained. See [assistant verification](docs/ASSISTANT_VERIFICATION.md) for the evidence and its limits.
 
-The entrant will extensively test and explicitly approve the prototype before the final submission version is prepared. Live hosted model/database access, a real assistant/tool turn, public judge access and production hardening remain outstanding.
+The supporting assistant panel accepts explicit questions, streams plain-text replies and refreshes the room. It can read, rank, find and explain exchanges; participants still shortlist and approve themselves. New replies ignore older transcript completions; stopping the browser wait does not cancel a server turn. The entrant must extensively test and explicitly approve this prototype before the final submission version. Browser checks for the new panel, judge access, measured capacity and final release validation remain outstanding. Vercel protection stays enabled by the entrant's choice.
 
 ## Private configuration and Qloo checks
 
