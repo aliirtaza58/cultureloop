@@ -191,6 +191,21 @@ test("message transport rejects supplied session/member authority before dispatc
   assert.equal(dispatched, false);
 });
 
+test("stream cursors narrow the verified caller's history without selecting authority", async () => {
+  const token = newCapability(), created = await store.create(token, "Cursor reader");
+  const caller = await authorizeAssistant(guestRequest(token), created.view.room.id, store);
+  let calls = 0;
+  const stream = async (address: string, startIndex: number) => {
+    assert.equal(address, caller.address); assert.equal(startIndex, 42); calls++;
+    return new ReadableStream<Uint8Array>({ start(controller) { controller.close(); } });
+  };
+  assert.equal((await streamAssistant(guestRequest(token, "stream?startIndex=42&sessionId=other"), created.view.room.id, store, stream)).status, 200);
+  for (const cursor of ["-1", "1.5", "NaN", "9007199254740992"]) {
+    await assert.rejects(streamAssistant(guestRequest(token, `stream?startIndex=${cursor}`), created.view.room.id, store, stream));
+  }
+  assert.equal(calls, 1);
+});
+
 test("free inference remains disabled without explicit verification and credentials", () => {
   const names = ["CULTURELOOP_FREE_AI_VERIFIED", "AI_GATEWAY_MODEL", "AI_GATEWAY_API_KEY", "VERCEL_OIDC_TOKEN"] as const;
   const before = Object.fromEntries(names.map(name => [name, process.env[name]]));
@@ -218,9 +233,13 @@ test("synthetic dispatch binds the caller and persists the hourly message limit"
       body: JSON.stringify({ message: "Read my room" }) });
     const send = async (address: string, text: string, auth: typeof caller.auth) => {
       assert.equal(address, caller.address); assert.equal(text, "Read my room"); assert.deepEqual(auth, caller.auth);
-      dispatched++; return { id: "synthetic-session" };
+      dispatched++; return { id: "synthetic-session", startIndex: 17 };
     };
-    for (let n = 0; n < 20; n++) assert.equal((await sendAssistant(request(), created.view.room.id, store, pool, send)).status, 200);
+    for (let n = 0; n < 20; n++) {
+      const response = await sendAssistant(request(), created.view.room.id, store, pool, send);
+      assert.equal(response.status, 200);
+      assert.equal((await response.json()).startIndex, 17);
+    }
     await assert.rejects(sendAssistant(request(), created.view.room.id, store, pool, send), /Request limit/);
     assert.equal(dispatched, 20);
     assert.deepEqual((await store.read(created.view.room.id, session)).room.cycles, []);
