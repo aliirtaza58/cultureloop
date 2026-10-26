@@ -1,6 +1,6 @@
 # CultureLoop resources, data, and deployment
 
-Updated 2026-10-27. Budget: **free tiers only**. Google model/local eve and hosted Supabase schema/transaction checks pass. The entrant confirmed all three Free/Hobby plans; the Vercel project is created and linked. Shared/hosted eve execution remains pending. Follow [setup](SETUP.md) and [assistant verification](ASSISTANT_VERIFICATION.md).
+Updated 2026-10-27. Budget: **free tiers only**. Hosted Supabase schema/transaction checks and a real protected Vercel eve/Google tool round trip pass. Vercel Hobby is connector-verified; Google Free and Supabase Free are entrant-confirmed. Protection stays enabled for the prototype. Latest UI/browser checks, judge access and actual remaining resource allowances are unresolved. Follow [setup](SETUP.md), [assistant verification](ASSISTANT_VERIFICATION.md) and [submission checklist](SUBMISSION_CHECKLIST.md).
 
 ## Resources to prepare
 
@@ -8,7 +8,7 @@ Updated 2026-10-27. Budget: **free tiers only**. Google model/local eve and host
 | --- | --- | --- |
 | Qloo event access | Entity identities and cultural evidence | Key issued; live search/catalog ranking verified privately |
 | GitHub account/repository | Public source, issues, version history | [Source repository](https://github.com/aliirtaza58/cultureloop); initial source pushed October 18 |
-| Vercel Hobby account/project | Public HTTPS web app and agent runtime | Entrant confirmed Hobby target; runtime/deployment allowances still need checking |
+| Vercel Hobby account/project | HTTPS web app and agent runtime | Connector confirms Hobby; protected hosted turn passed; remaining allowances need checking |
 | Supabase Free PostgreSQL | Persistent rooms, listings, approvals, private caches | TLS/login, five RLS-protected tables, zero browser grants and transaction/rollback checks passed |
 | Google AI Studio Free | Model inference for one bounded tool-calling agent | Entrant confirmed Free; model-list and live tool protocol passed; quota is finite |
 | Devpost entry | Official submission and judge instructions | Entrant-owned; final submission remains an entrant action |
