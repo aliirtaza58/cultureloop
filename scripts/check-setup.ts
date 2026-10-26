@@ -3,7 +3,7 @@ export {};
 const present = (name: string) => Boolean(process.env[name]?.trim());
 const gateway = process.argv.includes("--gateway");
 const google = process.argv.includes("--google");
-const names = ["QLOO_API_KEY", "GOOGLE_GENERATIVE_AI_API_KEY", "GOOGLE_MODEL", "AI_GATEWAY_API_KEY", "AI_GATEWAY_MODEL", "DATABASE_URL", "SESSION_SECRET"];
+const names = ["QLOO_API_KEY", "GOOGLE_GENERATIVE_AI_API_KEY", "GOOGLE_MODEL", "AI_GATEWAY_API_KEY", "AI_GATEWAY_MODEL", "DATABASE_URL", "DATABASE_SSL_CA", "DATABASE_SSL_CA_FILE", "SESSION_SECRET"];
 const result: Record<string, unknown> = {
   modelProvider: process.env.CULTURELOOP_MODEL_PROVIDER || "gateway",
   variables: Object.fromEntries(names.map(name => [name, present(name) ? "present (not validated)" : "missing"])),

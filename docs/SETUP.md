@@ -12,6 +12,7 @@ Updated October 26, 2026. Free tiers only. The local UI and direct Google model/
 | `CULTURELOOP_MODEL_PROVIDER` / `GOOGLE_MODEL` | Explicit provider and verified free model selection |
 | AI Gateway / `AI_GATEWAY_API_KEY`, `AI_GATEWAY_MODEL` | Optional explicit alternative; no automatic provider fallback |
 | PostgreSQL / `DATABASE_URL` | Persists private rooms, decisions, holds and Qloo cache |
+| `DATABASE_SSL_CA` / `DATABASE_SSL_CA_FILE` | Verified database TLS; choose inline PEM on the host or an ignored local CA file |
 | `SESSION_SECRET` | Signs temporary selections of server-resolved identities; setup:local generates/preserves it privately |
 | `CULTURELOOP_APP_ORIGIN` | Exact public origin used for request validation; dev:local supplies http://127.0.0.1:3017 |
 
@@ -45,11 +46,12 @@ Gateway remains available only through explicit `CULTURELOOP_MODEL_PROVIDER=gate
 
 ## 3. Prepare hosted persistence
 
-1. After the hosting target is confirmed, sign into [Neon](https://console.neon.tech). Select an organization on the **Free** plan and create a small `cultureloop` project, without a paid trial/add-on. Verify the actual plan and allowance. [Plans](https://neon.com/pricing).
-2. Open **Connect**, select the intended development branch/database/role, and choose a pooled PostgreSQL connection. Save its connection string privately as `DATABASE_URL` in `.env.local`. Preserve its SSL parameters. [Connection instructions](https://neon.com/docs/get-started/connect-neon).
-3. Report only that the free database is ready and its non-secret project/branch name. The implementation session will verify the target, apply [the schema](../db/001_rooms.sql), and test transactions. Keep `CULTURELOOP_HOSTED_DB_VERIFIED=false` until this check. Entering a URL does not establish connectivity or schema installation.
-4. Local embedded PostgreSQL is available for tests and later local prototype development, using `CULTURELOOP_LOCAL_PROTOTYPE=true`. It stores data under ignored `.private/prototype-db`. Never enable embedded storage on Vercel; it is not hosted persistence.
-5. Run only one server process against this embedded directory at a time. The standalone eve runtime and web app were checked sequentially. Their combined service deployment requires the shared hosted PostgreSQL target; do not start both against the same local files.
+1. Open [Supabase](https://supabase.com/dashboard), confirm the intended organization is **Free**, and use a dedicated `cultureloop-prototype` project. Preserve unrelated projects. If the free project allowance is exhausted, stop before upgrading or creating another billable resource. [Plans](https://supabase.com/pricing).
+2. In the dedicated project, disable **Integrations → Data API → Enable Data API**. The app uses server-only PostgreSQL, not browser Supabase data endpoints. Inspect existing tables and apply appropriate private grants/RLS before loading room/cache data; the generic SQL schema alone does not establish Supabase API isolation. [Data API security](https://supabase.com/docs/guides/api/securing-your-api).
+3. Open **Connect → Transaction pooler** (port 6543). Save the URI as `DATABASE_URL` in ignored `.env.local`. Replace the entire password placeholder, including its template brackets, with the URL-encoded database password. Use the project's database password, not the Supabase account password/API key. [Connection instructions](https://supabase.com/docs/guides/database/connecting-to-postgres).
+4. Under **Database → Settings → SSL Configuration**, download the database CA certificate and save it under ignored `.private/supabase-ca.crt`. Set `DATABASE_SSL_CA_FILE=.private/supabase-ca.crt` locally. For hosting, supply the PEM in the server-only `DATABASE_SSL_CA` environment variable instead; literal newlines or escaped `\n` are supported. Configure only one CA source. Never disable certificate verification to fix a trust error. [SSL guidance](https://supabase.com/docs/guides/platform/ssl-enforcement).
+5. Keep `CULTURELOOP_HOSTED_DB_VERIFIED=false` until the dedicated Free target, TLS, login, schema and transaction/access checks pass. The app requires certificate/hostname verification and refuses TLS options that would override it. PostgreSQL `28P01` means authentication failed; certificate-chain errors are a separate issue. No hosted schema/data check has passed yet.
+6. Local embedded PostgreSQL remains available with `CULTURELOOP_LOCAL_PROTOTYPE=true`, under ignored `.private/prototype-db`. Use one process at a time. Never enable it on Vercel or share these files between web/eve processes; combined services need verified network PostgreSQL. Neon remains a compatible alternative, not an additional requirement.
 
 ## 4. Deploy and test after free account access is verified
 

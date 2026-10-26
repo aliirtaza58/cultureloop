@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { Pool } from "pg";
+import { hostedDatabaseOptions } from "./hosted-database.ts";
 import type { SqlConnection, SqlPool } from "./store.ts";
 
 const runtime = globalThis as typeof globalThis & { cultureloopDatabase?: Promise<SqlPool> };
@@ -41,12 +42,7 @@ async function initialize(): Promise<SqlPool> {
       };
     } };
   }
-  if (!process.env.DATABASE_URL) throw new Error("Hosted PostgreSQL is not configured.");
-  // The hosted target/plan must be verified during setup before this opt-in is enabled.
-  if (process.env.CULTURELOOP_HOSTED_DB_VERIFIED !== "true") throw new Error("Hosted database target/free plan has not been verified.");
-  const pool = new Pool({ connectionString: process.env.DATABASE_URL, max: 3,
-    connectionTimeoutMillis: 8000, idleTimeoutMillis: 10000, allowExitOnIdle: true,
-    application_name: "cultureloop" });
+  const pool = new Pool(await hostedDatabaseOptions());
   return { async connect() {
     const client = await pool.connect();
     return { async query<T extends Record<string, unknown>>(sql: string, values?: unknown[]) {

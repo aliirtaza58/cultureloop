@@ -54,7 +54,7 @@ npm run qloo:probe -- search book "The Hobbit"
 npm run setup:check -- --gateway
 ```
 
-The search command makes one live GET with no automatic retries, saving responses privately. The optional Gateway diagnostic reads model/credit metadata only and makes no inference request. `npm run qloo:verify` performs a bounded research study of up to 35 new requests; it reuses private captures and requires review of ambiguous identities. Do not rerun merely to verify a build.
+The search command makes one live GET with no automatic retries, saving responses privately. `npm run setup:check -- --google` reads model metadata without inference; `npm run model:verify -- --live` performs a bounded synthetic calculator/tool protocol check after free access is verified. Gateway diagnostics remain an explicit alternative. See [setup](docs/SETUP.md). `npm run qloo:verify` performs a bounded study of up to 35 new requests; it reuses private captures and requires review of ambiguous identities. Do not rerun merely to verify a build.
 
 ## Project references
 
