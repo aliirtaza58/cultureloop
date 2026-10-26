@@ -1,0 +1,74 @@
+# Deployment exclusions mirror local/private Git exclusions.
+# Credentials and local settings
+.env
+.env.*
+!.env.example
+.vercel/
+
+# Local coding-agent instructions, skills, settings, and session state
+AGENTS.md
+AGENTS.local.md
+CLAUDE.md
+CLAUDE.local.md
+GEMINI.md
+CODEX.md
+.agent/
+.agents/
+.codex/
+.claude/
+.cursor/
+.cursorrules
+.windsurf/
+.windsurfrules
+.continue/
+.aider*
+.hallmark/
+.mcp.json
+.mcp.local.json
+mcp.local.json
+.vscode/
+.idea/
+.github/copilot-instructions.md
+.github/instructions/
+.github/prompts/
+/skills/
+/design-system/
+/PHASE_TRACKER.md
+/SESSION_HANDOFF.md
+/docs/FRONTEND_DESIGN.md
+
+# Private responses, caches, and participant research
+.private/
+.cache/
+data/private/
+research/private/
+*.log
+
+# Build and dependency outputs
+node_modules/
+.next/
+.eve/
+.output/
+.workflow/
+dist/
+build/
+coverage/
+__pycache__/
+*.pyc
+*.tsbuildinfo
+
+# Retain the user's original skill archive locally.
+ui-ux-pro-max-skill-main.zip
+qloo-hackathon-kit-main.zip
+/qloo-hackathon-kit-main/
+
+# Local databases
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+
+.git/
+supabase/.temp/
+supabase/.branches/

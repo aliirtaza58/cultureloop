@@ -159,7 +159,7 @@ Implementation work covers scaffolding, adapters, matching, UI, persistence, age
 
 See [foundation verification](FOUNDATION_VERIFICATION.md) for completed checks and remaining implementation work.
 
-Next checkpoint: useful live Qloo evidence plus a free hosted agent/tool round trip. Continue independent shortlist, state, and verification work when account access blocks hosting; never substitute synthetic evidence for a failed live gate.
+The live Qloo and protected hosted agent/tool gates have passed; retain eve. Next checkpoint: supporting assistant interface, hosted book-exchange acceptance checks, then entrant prototype testing and explicit approval. Vercel protection remains enabled by the entrant's decision; anonymous judge access is still a release dependency. Never substitute synthetic evidence for an unverified gate.
 
 ## Sources
 

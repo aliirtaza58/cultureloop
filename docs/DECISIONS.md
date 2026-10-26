@@ -2,6 +2,13 @@
 
 This log records product and architecture choices, their status, and rationale.
 
+## D019 — Retain eve and protect the prototype
+
+- Date: 2026-10-27. Status: hosted gate passed; entrant chose to retain Vercel protection.
+- A real Google tool round trip completed on Vercel with the shared Supabase database, within the four-hour focused feasibility allowance. Retain the existing eve runtime and domain services; no fallback rewrite is needed.
+- Keep SSO enabled. Authenticated prototype verification is distinct from anonymous judge access, which remains a release dependency. Do not disable protection or broaden trusted sources without a later explicit decision.
+- Use an explicit Preview target during prototype deployments. Audit the upload as well as Git so local agent files, private evidence and secrets stay excluded.
+
 ## D018 — Reuse free Google and PostgreSQL accounts
 
 - Date: 2026-10-26; updated 2026-10-27. Status: direct Google/local eve and hosted PostgreSQL transaction/access checks verified; shared hosted runtime pending.
