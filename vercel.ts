@@ -12,7 +12,8 @@ const config = await withEve({
   ],
 });
 
-// The SDK's generated hosted build command targets Linux. Keep local development portable.
+// Keep the generated root explicit while making the development command portable.
 export default { ...config, services: { ...config.services,
-  eve: { ...config.services.eve, devCommand: "node ../../../scripts/dev-service.ts agent" },
+  eve: { ...config.services.eve, root: ".eve/vercel-services/eve",
+    devCommand: "node ../../../scripts/dev-service.ts agent" },
 } };

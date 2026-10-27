@@ -18,6 +18,18 @@ test("one service graph keeps room APIs on web and routes only assistant endpoin
   assert.equal(destination("/eve/v1/health"), "eve");
 });
 
+test("every service has a root and eve builds from its isolated output directory", () => {
+  for (const [name, service] of Object.entries(config.services)) {
+    assert.equal(typeof service.root, "string", `${name} needs a root before build validation`);
+    assert.ok(service.root.trim().length > 0);
+    if (name === "web") assert.equal(service.root, ".");
+  }
+  assert.equal(config.services.eve.root, ".eve/vercel-services/eve");
+  assert.equal(config.services.eve.outputDirectory, ".vercel/output");
+  assert.match(config.services.eve.buildCommand ?? "", /EVE_INTERNAL_BUILD_OUTPUT_DIRECTORY=.*\.eve\/vercel-services\/eve\/\.vercel\/output/);
+  assert.match(config.services.eve.buildCommand ?? "", /node_modules\/eve\/bin\/eve\.js.*build/);
+});
+
 const verifiedFixture = { DATABASE_URL: "postgres://synthetic-fixture/not-a-connection", CULTURELOOP_HOSTED_DB_VERIFIED: "true",
   SESSION_SECRET: "synthetic-test-secret-".repeat(3) };
 test("combined services refuse absent/unverified or embedded database settings before spawning", () => {
