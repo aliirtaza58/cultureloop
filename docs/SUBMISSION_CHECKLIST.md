@@ -17,6 +17,7 @@ The four equally weighted criteria cover technical implementation, design, poten
 - [x] Public repository contains an MIT license and setup instructions; recheck the published repository's license detection before submission.
 - [x] Hosted PostgreSQL schema, private access and transaction checks passed. See [assistant verification](ASSISTANT_VERIFICATION.md).
 - [x] A protected Vercel preview completed a real Google/eve `read_room` turn against hosted SQL. This is runtime evidence, not a full browser acceptance pass.
+- [x] Hosted HTTP exchange lifecycle, live/cached Qloo provenance, approval/repair guards and persistence across deployments passed. See [hosted checks](HOSTED_EXCHANGE_VERIFICATION.md); synthetic decisions and sparse incoming ranks are explicitly identified.
 - [ ] Complete [entrant prototype review](PROTOTYPE_REVIEW.md), record feedback privately, fix failures and obtain explicit approval.
 - [ ] Verify the latest assistant UI in a browser on mobile and desktop, including waiting, error, interruption and repeated-question behavior.
 - [ ] Verify the final hosted book-exchange flow from separate browser sessions, with live Qloo evidence and reload/export checks. Label fictional inventory and simulated approvals.

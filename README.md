@@ -60,6 +60,9 @@ The search command makes one live GET with no automatic retries, saving response
 
 - [Setup](docs/SETUP.md): account, model and database configuration; outstanding gates.
 - [Backend verification](docs/PROTOTYPE_BACKEND_VERIFICATION.md): observed checks and limitations.
+- [Hosted checks](docs/HOSTED_EXCHANGE_VERIFICATION.md): exchange lifecycle, live/cached evidence and assistant results.
+- [Prototype review](docs/PROTOTYPE_REVIEW.md): entrant testing and feedback before final approval.
+- [Submission checklist](docs/SUBMISSION_CHECKLIST.md): current requirements and outstanding release gates.
 - [Build plan](docs/BUILD_PLAN.md): workflow, matching contract and checkpoints.
 - [Qloo API reference](docs/QLOO_API_REFERENCE.md): usage and official sources.
 - [Hackathon kit notes](docs/QLOO_KIT_NOTES.md): useful workflows, provenance and MCP deployment limits.
