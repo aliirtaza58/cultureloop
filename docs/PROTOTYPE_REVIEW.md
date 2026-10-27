@@ -2,6 +2,8 @@
 
 This is a test script, not a completed study. Run it on the latest provided preview, record problems privately, and explicitly approve the prototype only after the changes you need are tested. The preview currently uses Vercel protection by the entrant's choice; hosting access is separate from membership in a book circle.
 
+The October 27 [review of the supplied Production URL](PROTOTYPE_REVIEW_RESULTS.md) found missing Production configuration and an older deployment. Resolve that room-entry blocker before running the full script on that URL. Earlier Preview results do not transfer automatically to a different environment.
+
 ## First pass: fictional example
 
 1. Open the example. Confirm that its readers, inventory, ranks and simulated decisions are visibly labeled fictional.
