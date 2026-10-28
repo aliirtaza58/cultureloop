@@ -2,6 +2,14 @@
 
 This log records product and architecture choices, their status, and rationale.
 
+## D020 — Submit the approved current version
+
+- Date: 2026-10-29. Status: explicit entrant decision.
+- The entrant selected the existing prototype as the final submission version. This satisfies D014's approval gate; it does not imply a completed participant study or prove unmeasured features.
+- Freeze scope and prepare the Devpost package. Use focused checks for small changes; do not repeatedly run broad suites or restart implementation. Preserve known limitations and existing observed evidence.
+- The public Production version is working after `3c02ffb`; five older deployments were removed at the entrant's request. Keep hosting protection settings unchanged. Resource headroom remains unknown; free tiers only still applies.
+- Devpost eligibility attestations and final submission remain entrant actions. A submission draft is not a submitted entry.
+
 ## D019 — Retain eve and protect the prototype
 
 - Date: 2026-10-27. Status: hosted gate passed; entrant chose to retain Vercel protection.

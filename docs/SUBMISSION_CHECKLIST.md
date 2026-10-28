@@ -1,48 +1,64 @@
-# Submission readiness
+# Final submission checklist
 
-Reviewed October 27, 2026. This is a release checklist, not evidence that CultureLoop is ready to submit. The entrant must test and explicitly approve the prototype before the final submission version.
+Updated October 29, 2026. The entrant approved the existing prototype as the final submission version. Scope is frozen; use targeted checks and existing evidence.
 
-## Published requirements
+**Demo:** [CultureLoop](https://cultureloop-omega.vercel.app/)
 
-The deadline is **October 30, 2026, 11:45 pm EDT**, equivalent to **October 31, 08:45 PKT**. The overview requires a working Qloo-integrated agentic application, an externally hosted usable demo, public source with runnable instructions/assets, a feature description explaining Qloo's role, and an open-source license visible on the repository page. A demo video is explicitly optional. [Devpost overview](https://qloo.devpost.com/)
+**Source:** [aliirtaza58/cultureloop](https://github.com/aliirtaza58/cultureloop)
 
-The rules require accurate functionality claims, English materials or translations, authorized third-party assets/integrations, and entrant ownership. Confirm personal eligibility and Devpost registration before submitting. Keep judge testing free and available through November 5, 2026, 11:45 pm Eastern Time. [Official rules, sections 1–4](https://qloo.devpost.com/rules)
+**Submission copy:** [ready-to-paste Devpost fields](DEVPOST_SUBMISSION.md)
 
-**Access conflict:** the overview excludes submissions relying on private access; the rules also describe login instructions for private websites. The current SSO-protected preview is a prototype, not verified submission access. Preserve the entrant's instruction to keep Vercel protection enabled. Resolve compliant release access before submission; a private CLI test or a video does not resolve this conflict. [Overview](https://qloo.devpost.com/), [rules, Testing](https://qloo.devpost.com/rules)
+## Required deliverables
 
-The four equally weighted criteria cover technical implementation, design, potential impact and idea quality. Eligibility/theme/API fit is checked first. [Official rules, section 6](https://qloo.devpost.com/rules)
+- [x] Working externally hosted application: Production deployed from the service-root fix, with server settings configured.
+- [x] Public repository, source and run instructions. GitHub independently reports public visibility and detects MIT.
+- [x] Open-source license: [MIT](../LICENSE); bundled font licenses retained.
+- [x] Qloo-powered agent workflow and written explanation: [submission copy](DEVPOST_SUBMISSION.md).
+- [x] Public judge entry: Production returned HTTP200 without a redirect on October29; room membership remains private.
+- [x] Entrant selected the current version for final submission on October 29.
+- [x] Known limits and evidence provenance documented; no fabricated research, handoffs or quality gains.
+- [x] Credentials, private responses, coding-agent files and trackers excluded from public source.
 
-## Release gates
+The event requires a functional hosted demo, public source/run assets, description and license. Video is **optional**. The deadline is **October 30, 2026 at 11:45 pm EDT = October 31 at 08:45 PKT**. [Official requirements](https://qloo.devpost.com/)
 
-- [x] Public repository contains an MIT license and setup instructions; recheck the published repository's license detection before submission.
-- [x] Hosted PostgreSQL schema, private access and transaction checks passed. See [assistant verification](ASSISTANT_VERIFICATION.md).
-- [x] A protected Vercel preview completed a real Google/eve `read_room` turn against hosted SQL. This is runtime evidence, not a full browser acceptance pass.
-- [x] Hosted HTTP exchange lifecycle, live/cached Qloo provenance, approval/repair guards and persistence across deployments passed. See [hosted checks](HOSTED_EXCHANGE_VERIFICATION.md); synthetic decisions and sparse incoming ranks are explicitly identified.
-- [ ] Complete [entrant prototype review](PROTOTYPE_REVIEW.md), record feedback privately, fix failures and obtain explicit approval.
-- [ ] Verify the latest assistant UI in a browser on mobile and desktop, including waiting, error, interruption and repeated-question behavior.
-- [ ] Verify the final hosted book-exchange flow from separate browser sessions, with live Qloo evidence and reload/export checks. Label fictional inventory and simulated approvals.
-- [ ] Resolve release access and test the exact submitted URL from a fresh browser without developer assistance.
-- [ ] Configure and verify the release environment; do not assume Preview settings also exist in Production.
-- [ ] Record current resource usage and remaining headroom; test quota/timeout behavior without purchasing capacity.
-- [ ] Refresh README and testing instructions to match the released revision. Record the commit and URL in release evidence.
-- [ ] Entrant completes the Devpost fields, checks all links and submits before the deadline. No automated submission is authorized.
+## Implementation already complete
 
-## Free-runtime checks
+- [x] Guest circles: 2–6 members; up to 3 physical copies and 3 confirmed interests each.
+- [x] Qloo identity confirmation and ranking of offered inventory, with private cache/provenance.
+- [x] Explicit acceptable-book shortlists stored separately from ranks.
+- [x] Two-/three-reader cycles; no self-transfer, overlapping member or duplicate copy allocation.
+- [x] Revision-bound approvals, transactional copy holds, idempotent retries.
+- [x] Withdrawal/decline and repair, preserving unchanged disjoint cycles.
+- [x] Agreement download/print and explicit completion report.
+- [x] Bounded eve/Google assistant; participant decisions stay outside its tools.
+- [x] Shared hosted PostgreSQL and verified TLS/private table access.
+- [x] Production deployment repaired; five older deployments removed at the entrant's request.
 
-The Vercel connector independently reported the intended workspace's plan as Hobby on October 27. Google Free and Supabase Free were confirmed by the entrant. The hosted model/tool check is separately observed. No capacity guarantee follows from these facts.
+## Existing verification carried forward
 
-Current published Hobby allowances include **50,000 Workflow events/month and 1 GB Workflow data written**. Workflow also uses Queues and Functions, so include those meters in the check. [Workflow pricing](https://vercel.com/docs/workflows/pricing) Queues includes the first **1,000,000 operations** on Hobby. [Queues pricing](https://vercel.com/docs/queues/pricing)
+- [x] 95-test baseline and production web/eve builds passed before the final configuration change.
+- [x] Four targeted service-routing/launch checks and TypeScript passed for that change.
+- [x] Fresh Production smoke passed home/agent health, create/join/reload, guest isolation, cached Qloo lookup, real Google tool turn and stream isolation.
+- [x] Hosted 40-request exchange/Qloo lifecycle passed with fictional ownership and decisions.
+- [x] Browser example passed shortlists, generation, three separate simulated approvals, download, reload and an assistant reply.
+- [x] Six responsive DOM widths passed page/control overflow checks.
+- [x] Publication and build-secret audits passed at their recorded checkpoints.
+- [x] No broad test suite rerun for submission documentation changes.
 
-Finished Hobby workflow payloads remain readable for one day; durable room state must remain in PostgreSQL. [Workflow retention](https://vercel.com/docs/workflows/retention)
+Evidence: [hosted checks](HOSTED_EXCHANGE_VERIFICATION.md), [assistant checks](ASSISTANT_VERIFICATION.md). The initial [Production review](PROTOTYPE_REVIEW_RESULTS.md) documents resolved setup issues.
 
-The source selects an in-process just-bash filesystem with automatic installation and default model tools disabled. A project-scoped named-sandbox listing returned zero entries after the hosted turn; this does **not** prove zero historical or ephemeral Sandbox usage. Sandbox Hobby has bounded included usage and pauses creation when exhausted. [Sandbox pricing](https://vercel.com/docs/sandbox/pricing)
+## Remaining entrant actions
 
-Actual Workflow/Queues/Functions/Sandbox usage and remaining allowance are still unverified. Both the connector billing read and scoped CLI usage request returned `404 costs_not_found` / `Costs not found`; that is unavailable evidence, not zero cost or zero consumption. Before release, inspect the project's Workflows run details and the workspace Usage dashboard, recording only aggregate counts/sizes privately. Also check Google request/token limits, Qloo quota and Supabase database/egress headroom. A failed free allowance is a blocker to solve within free options, never permission to upgrade.
+- [ ] Open or create the CultureLoop Devpost entry and paste [the prepared fields](DEVPOST_SUBMISSION.md).
+- [ ] Add the live URL and public repository URL; select the relevant built-with tags.
+- [ ] Confirm entrant identity, solo-team details, eligibility, original-work/asset permissions and event association.
+- [ ] If the editor requests a gallery image, add a current screenshot showing the labeled example and transfers. No video recording is required.
+- [ ] Review provider dashboards once for remaining free quota: Qloo, Google, Vercel and Supabase. Usage APIs returned404, so headroom is unknown; do not add paid capacity.
+- [ ] Preview the Devpost entry, verify its links, then submit before the deadline.
+- [ ] Save the submission confirmation/project URL and keep the app available through judging, ending November 5 at11:45 pm Eastern Time.
 
-## Submission story and evidence
+Eligibility/attestations and final submission belong to the entrant. [Official rules](https://qloo.devpost.com/rules)
 
-Explain the complete loop: confirmed cultural favorites → Qloo ranks the actual room inventory → each reader explicitly shortlists acceptable books → the solver proposes two-/three-person transfers → each participant approves the displayed revision. Show repair when a copy is withdrawn, preserving unchanged disjoint cycles.
+## Accepted limitations
 
-Demonstrate what Qloo changes using the same inventory and constraints, with and without its evidence. A repeated match or sparse Qloo coverage is a result to report, not hide. A good narrative connects discovery to a feasible physical exchange while distinguishing taste evidence, willingness and approval.
-
-Use screenshots of inventory, evidence, transfers and repair if useful. Show only consented/anonymized material. Do not publish raw Qloo captures, participant notes, cookies, keys or traces. Describe automated checks as automated; prototype approval, user research, preference gains and actual handoffs require their own observed evidence.
+Sparse Qloo results remain unknown. The authored example uses synthetic ranks; real Qloo discovery requires a real room and confirmed interests. No participant study, recommendation-superiority measurement or physical handoff is claimed. Assistant Markdown is displayed as plain text. General capacity and remaining free allowances are unmeasured. Further comprehensive testing is deferred by the entrant's decision; none of these unknowns is represented as a pass.
