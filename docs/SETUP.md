@@ -1,13 +1,13 @@
 # Prototype setup
 
-Updated October 26, 2026. Free tiers only. The local UI and direct Google model/tool protocol are verified; the combined hosted room assistant is pending. To review the local example without account provisioning, run `npm ci`, `npm run setup:local`, then `npm run dev:local` and open http://127.0.0.1:3017. Setup preserves the session secret privately. See [the README](../README.md) for the review flow.
+Updated October 29, 2026. Free tiers only. The deployed submission version is [CultureLoop](https://cultureloop-omega.vercel.app/); Production SQL, Qloo lookup and a real Google/eve tool turn have passed. The entrant approved the current prototype for submission. To run the local example, use `npm ci`, `npm run setup:local`, then `npm run dev:local` and open http://127.0.0.1:3017. Setup preserves the session secret privately. See [the README](../README.md).
 
 ## What each service does
 
 | Service / setting | Purpose |
 | --- | --- |
 | Qloo / `QLOO_API_KEY` | Resolves cultural identities and ranks room books; already live-tested |
-| Vercel Hobby workspace | Owns the future hosted web project; a workspace name does not establish its plan |
+| Vercel Hobby workspace | Hosts the deployed web/agent project; Hobby was independently confirmed |
 | Google AI Studio / `GOOGLE_GENERATIVE_AI_API_KEY` | Direct Gemini model access; separate from Qloo and hosting |
 | `CULTURELOOP_MODEL_PROVIDER` / `GOOGLE_MODEL` | Explicit provider and verified free model selection |
 | AI Gateway / `AI_GATEWAY_API_KEY`, `AI_GATEWAY_MODEL` | Optional explicit alternative; no automatic provider fallback |
@@ -56,14 +56,14 @@ Gateway remains available only through explicit `CULTURELOOP_MODEL_PROVIDER=gate
 
 ## 4. Deploy and test after free account access is verified
 
-The source now contains a programmatic `vercel.ts` service graph: the existing Next.js app and one eve runtime build together. Only `/cultureloop/rooms/:roomId/messages` and `/stream` are added as custom agent routes; existing room APIs stay on Next.js. The standard eve session API remains denied, with a public health probe. This configuration uses [Vercel Services, currently beta on all plans](https://vercel.com/docs/services); actual account allowances and hosted behavior remain unverified.
+The programmatic `vercel.ts` service graph builds the existing Next.js app and one eve runtime together. Only `/cultureloop/rooms/:roomId/messages` and `/stream` are custom agent routes; room APIs stay on Next.js. The standard eve session API remains denied, with a public health probe. This uses [Vercel Services, beta on all plans](https://vercel.com/docs/services). Hosted behavior has passed; actual remaining allowances are unmeasured.
 
-After the free shared database has been verified, stop the standalone web/agent servers, run `npm run services:check`, then `npm run dev:services`. The latter uses the pinned official Vercel CLI in local-only mode and listens on 127.0.0.1:3017. The preflight refuses missing/unverified database settings and embedded storage before downloading the CLI or starting services. It confirms configuration presence, not database connectivity or free eligibility. The Node service launchers preserve the public origin, accept service-assigned ports, and reject port 3000. Combined startup is still pending a real shared database.
+After the free shared database has been verified, stop the standalone web/agent servers, run `npm run services:check`, then `npm run dev:services`. The latter uses the pinned official Vercel CLI in local-only mode and listens on 127.0.0.1:3017. The preflight refuses missing/unverified database settings and embedded storage before downloading the CLI or starting services. It confirms configuration presence, not database connectivity or free eligibility. The Node service launchers preserve the public origin, accept service-assigned ports, and reject port 3000. The combined local CLI launcher remains unverified after dependency synchronization stalled; the hosted service graph uses the verified shared database successfully.
 
-1. Link the repository to a `cultureloop` project in the confirmed Hobby workspace. Complete the eve/free-service check first; its active implementation timebox is four hours. If it cannot complete a free hosted round trip, use the planned bounded Next.js AI SDK fallback with the same domain services. Neither path bypasses free model eligibility.
+1. Use the existing `cultureloop` project in the confirmed Hobby workspace. The hosted eve feasibility gate passed; retain the selected runtime and providers. A new checkout still needs its own private configuration and free-plan confirmation.
 2. In the project's environment settings, add server-only Qloo, database, session-secret and model settings, plus `CULTURELOOP_APP_ORIGIN` matching its exact HTTPS origin. Use supported project OIDC for Gateway where possible; otherwise store its private Gateway key. Do not use `NEXT_PUBLIC_` for credentials. Confirm database target/plan/schema before enabling the hosted DB opt-in. Keep local embedded mode off.
 3. Deploy a preview; verify browser → API → database → Qloo/model → response behavior, persistence across reloads, separate participant sessions and transactional holds.
-4. Provide the entrant a working prototype URL for extensive testing and feedback. Obtain explicit prototype approval before final hardening/submission work.
-5. Later, publish a stable public URL without Vercel-team login requirements and test judge access from a fresh browser. Devpost submission remains the entrant's action.
+4. The entrant approved the existing version on October 29. Preserve that scope and use targeted verification for changes.
+5. Submit the stable public Production URL listed above. Devpost eligibility attestations and final submission remain the entrant's actions.
 
-Outstanding: entrant prototype review, broader separate-browser usability checks, free account/model verification, hosted migration/concurrency, verifying the prepared service graph and a live tool turn, assistant UI integration, public release hardening and final submission preparation. The agent tools and protected transport have local service/HTTP checks in [assistant verification](ASSISTANT_VERIFICATION.md). Those checks do not establish hosted gates. Local examples and research rooms are fictional; no human usefulness or real physical exchange has been verified.
+Current deployment: eleven verified server settings are configured separately for Production. Its Git service graph, migrations, bounded concurrency/hold checks, Qloo/model integration and assistant UI have observed evidence in [assistant verification](ASSISTANT_VERIFICATION.md). Combined local CLI development remains unverified; plain local example mode works independently. Remaining submission steps and known limits are in the [final checklist](SUBMISSION_CHECKLIST.md). No real participant study or physical exchange has been verified.

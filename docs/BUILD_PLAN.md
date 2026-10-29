@@ -1,6 +1,6 @@
 # CultureLoop build plan
 
-Updated October 21, 2026 for the entrant's revised implementation plan. This version supersedes conflicting earlier decisions. Preserve the existing matcher, Qloo adapter, fixtures, and scaffold; do not restart. **Free tiers only.** Completed checks are recorded in [foundation verification](FOUNDATION_VERIFICATION.md).
+Updated October 29, 2026. The entrant selected the current prototype as the final submission version and requested focused checks instead of broad suites after every small change. Scope is frozen: complete the [submission checklist](SUBMISSION_CHECKLIST.md) and [Devpost fields](DEVPOST_SUBMISSION.md). The workflow below remains the implementation contract; dated milestones describe the build history. Preserve the working app. **Free tiers only.**
 
 ## Product commitment
 
@@ -13,6 +13,8 @@ API key application statement:
 The initial audience is a small group of friends or students. Human usefulness remains a hypothesis until consenting participants try the product; do not fabricate research or contact testers without authorization.
 
 ## Prototype approval gate
+
+**Satisfied October 29:** explicit entrant instruction to use the current prototype for final submission. This supersedes the pending-approval state in earlier checkpoints; it does not establish user research or unmeasured outcomes.
 
 Build the prototype first, following this plan and preserving existing code. The entrant will test it extensively and provide feedback. Do not treat a prototype checkpoint as approval for the final submission version. After explicit prototype approval, incorporate feedback and proceed to final hardening/submission preparation. A hosted prototype is a review environment, not an authorized Devpost submission.
 
@@ -159,7 +161,7 @@ Implementation work covers scaffolding, adapters, matching, UI, persistence, age
 
 See [foundation verification](FOUNDATION_VERIFICATION.md) for completed checks and remaining implementation work.
 
-The live Qloo and protected hosted agent/tool gates have passed; retain eve. Next checkpoint: supporting assistant interface, hosted book-exchange acceptance checks, then entrant prototype testing and explicit approval. Vercel protection remains enabled by the entrant's decision; anonymous judge access is still a release dependency. Never substitute synthetic evidence for an unverified gate.
+The live Qloo, hosted agent/tool and approved-version gates are complete. Production is public, and observed browser/HTTP evidence is recorded. The next checkpoint is completing the Devpost entry using the [final checklist](SUBMISSION_CHECKLIST.md) and [prepared copy](DEVPOST_SUBMISSION.md). Preserve current scope and known limits; never substitute synthetic evidence for an unverified result.
 
 ## Sources
 

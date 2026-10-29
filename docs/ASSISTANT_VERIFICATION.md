@@ -1,6 +1,10 @@
 # Assistant implementation checks
 
-Updated October 27, 2026. Hosted PostgreSQL and a real protected Vercel eve/Google tool round trip pass. The assistant interface is implemented; latest-deployment/browser checks and entrant prototype review remain pending.
+Current status, October 29, 2026: the entrant approved the current version for submission. Production at https://cultureloop-omega.vercel.app/ passed create/join/reload, guest isolation, cached Qloo lookup, real Google/eve `read_room` and stream isolation after the `3c02ffb` deployment repair. In the browser, the example passed explicit shortlists, generation, three separate simulated approvals, held agreement, download, reload and a completed assistant reply. Six responsive DOM widths passed overflow checks. These observations used fictional readers/decisions; no physical exchange or user study is claimed.
+
+Scope is frozen for submission. Existing test/build evidence is carried forward; no broad suite rerun accompanies documentation changes. Resource headroom remains unknown. Browser withdrawal retesting was interrupted by automatic approval review's usage limit after the checks above; earlier HTTP/domain repair evidence remains valid.
+
+The notes below retain earlier checkpoint evidence. References to pending hosted gates and protected Preview URLs describe those historical checkpoints; Production now supersedes them and the old deployments were deleted.
 
 The Git deployment of `ce8d48a` was rejected before either service built: `services.eve` was missing the required `root` property. Local helper evaluation included the generated root; the final service override relied on that spread. The export now explicitly sets the pinned helper's `.eve/vercel-services/eve` root. Four service-routing/launch checks and TypeScript pass, including isolated agent build/output paths. This schema repair is separate from the Production environment settings identified in [the deployed review](PROTOTYPE_REVIEW_RESULTS.md). [Vercel's required root property](https://vercel.com/docs/services/config-reference#root).
 

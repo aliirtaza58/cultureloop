@@ -1,6 +1,6 @@
 # CultureLoop resources, data, and deployment
 
-Updated 2026-10-27. Budget: **free tiers only**. Hosted Supabase schema/transaction checks and a real protected Vercel eve/Google tool round trip pass. Vercel Hobby is connector-verified; Google Free and Supabase Free are entrant-confirmed. Protection stays enabled for the prototype. Latest UI/browser checks, judge access and actual remaining resource allowances are unresolved. Follow [setup](SETUP.md), [assistant verification](ASSISTANT_VERIFICATION.md) and [submission checklist](SUBMISSION_CHECKLIST.md).
+Updated 2026-10-29. Budget: **free tiers only**. The entrant approved the current version for submission. Production at [CultureLoop](https://cultureloop-omega.vercel.app/) is public and has passed SQL/Qloo/model and browser checkpoints. Vercel Hobby is connector-verified; Google Free and Supabase Free are entrant-confirmed. No protection settings were changed. Actual remaining resource allowances are unknown. Follow [setup](SETUP.md), [assistant verification](ASSISTANT_VERIFICATION.md) and the [final checklist](SUBMISSION_CHECKLIST.md).
 
 ## Resources to prepare
 

@@ -4,6 +4,10 @@ A prototype for friends and students exchanging physical books locally. Qloo ran
 
 Source: [aliirtaza58/cultureloop](https://github.com/aliirtaza58/cultureloop). Licensed under [MIT](LICENSE). Development and hosting use **free tiers only**.
 
+**Live app:** [cultureloop-omega.vercel.app](https://cultureloop-omega.vercel.app/). Start with **Try the example**; its readers, titles, ranks and decisions are explicitly fictional. For live Qloo suggestions, create a real room and join from separate browser sessions.
+
+The entrant selected this prototype as the final submission version on October 29. See the [final checklist](docs/SUBMISSION_CHECKLIST.md) and [Devpost submission copy](docs/DEVPOST_SUBMISSION.md).
+
 ## Run the local prototype
 
 Requires Node.js 24 or newer and npm.
@@ -36,13 +40,15 @@ With the local server running, `npm run verify:local` checks fictional workflows
 
 The solver separates titles from physical copies and prioritizes members served, weakest recipient rank utility, then total utility. This utility is an application heuristic, not an enjoyment probability. Shortlists remain separate from ranks; missing evidence stays unknown. Unchanged disjoint cycles retain approvals during repair; changed transfers require fresh approval.
 
-## Current prototype status
+## Submission version
 
 The web prototype provides the bookshelf, confirmed cultural favorites, evidence-aware shortlists, exchange review, approvals, withdrawal/repair, completion and agreement download. Qloo-backed HTTP checks passed using live responses/private cache, with fictional ownership and decisions. Browser example approvals and download passed. Missing Qloo results remain unknown.
 
-A protected Vercel Preview now runs Next.js and eve with shared Supabase PostgreSQL and direct Google inference. Hosted creation/joining, saved-room reload, guest isolation, a real `read_room` tool result and completed eve workflow passed. The free hosted feasibility checkpoint succeeded, so eve is retained. See [assistant verification](docs/ASSISTANT_VERIFICATION.md) for the evidence and its limits.
+Production runs Next.js and eve with shared Supabase PostgreSQL and direct Google inference. Hosted creation/joining, saved-room reload, guest isolation, Qloo lookup, a real `read_room` tool result and completed eve workflow passed. The Git deployment schema issue and missing Production settings were resolved in `3c02ffb`. Earlier Preview URLs were removed at the entrant's request. See [assistant verification](docs/ASSISTANT_VERIFICATION.md) for evidence and its limits.
 
-The supporting assistant panel accepts explicit questions, streams plain-text replies and refreshes the room. It can read, rank, find and explain exchanges; participants still shortlist and approve themselves. New replies ignore older transcript completions; stopping the browser wait does not cancel a server turn. The entrant must extensively test and explicitly approve this prototype before the final submission version. Browser checks for the new panel, judge access, measured capacity and final release validation remain outstanding. Vercel protection stays enabled by the entrant's choice.
+The supporting assistant panel accepts explicit questions, streams plain-text replies and refreshes the room. It can read, rank, find and explain exchanges; participants still shortlist and approve themselves. New replies ignore older transcript completions; stopping the browser wait does not cancel a server turn. Production browser checks passed example generation, three separate simulated approvals, agreement download, reload persistence and a completed assistant reply. Six responsive DOM widths showed no control/page overflow. The public Production URL opened without hosting-team login; no protection setting was changed during this work.
+
+Known limits: sparse Qloo coverage can leave ranks unknown; the example does not call Qloo; assistant Markdown appears as plain text; hosted resource headroom is unmeasured. No real-participant study or physical handoff is claimed. Additional comprehensive testing is deferred by the entrant's October 29 decision; submission preparation uses focused checks.
 
 ## Private configuration and Qloo checks
 
