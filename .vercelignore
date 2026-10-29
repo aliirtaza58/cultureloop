@@ -37,6 +37,13 @@ mcp.local.json
 /SESSION_HANDOFF.md
 /docs/FRONTEND_DESIGN.md
 
+# Local development records and validation tools.
+/docs/
+/tests/
+/scripts/demo.ts
+/scripts/probe-qloo.ts
+/scripts/verify-*.ts
+
 # Private responses, caches, and participant research
 .private/
 .cache/

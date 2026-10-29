@@ -31,8 +31,11 @@
   "include": [
     "next-env.d.ts",
     "src/**/*.ts",
-    "tests/**/*.ts",
-    "scripts/**/*.ts",
+    "scripts/check-setup.ts",
+    "scripts/dev-local.ts",
+    "scripts/dev-service.ts",
+    "scripts/setup-database.ts",
+    "scripts/setup-local.ts",
     "agent/**/*.ts",
     "app/**/*.ts",
     "app/**/*.tsx",
