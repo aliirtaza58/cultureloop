@@ -7,6 +7,8 @@
 [![Node.js](https://img.shields.io/badge/Node.js-24%2B-43853d?style=flat-square&logo=node.js&logoColor=white)](https://nodejs.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-b59052?style=flat-square)](LICENSE)
 
+![CultureLoop — Qloo-powered local book exchanges](public/cultureloop-thumbnail.png)
+
 CultureLoop helps friends and students exchange physical books locally. Qloo ranks the books already offered in a room using confirmed cultural interests. Readers choose what they would accept, then approve a two- or three-person exchange.
 
 **[Open the app](https://cultureloop-omega.vercel.app/) · [Judge walkthrough](#for-judges) · [Run locally](#run-locally) · [Project structure](#project-structure)**
